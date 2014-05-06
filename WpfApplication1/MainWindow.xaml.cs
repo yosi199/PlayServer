@@ -16,7 +16,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Threading;
 
-namespace WpfApplication1
+namespace PlayServer
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -24,10 +24,7 @@ namespace WpfApplication1
     public partial class MainWindow : Window
     {
 
-        FileManger fm;
-        bool runCheck = true;
-
-
+        private FileManger fm;
 
         public MainWindow()
         {
@@ -48,39 +45,27 @@ namespace WpfApplication1
             pb.IsEnabled = true;
             loadBTN.IsEnabled = false;
 
-            // Check if finished loading
-            Thread t = new Thread(() => load());
-            t.Start();
-            t.Name = "LoaderThread";
         }
 
-        private void load()
+        public void load()
         {
-            while (runCheck)
-            {
 
-                // If Async file loading thread finished...
-                if (!fm.isThreadStillLoading())
-                {
-                    Console.WriteLine("Done running");
+            Dispatcher.Invoke(
+              System.Windows.Threading.DispatcherPriority.Normal,
+             new Action(
+        delegate()
+        {
+            loadBTN.IsEnabled = true;
+            pb.IsIndeterminate = false;
+            pb.IsEnabled = false;
+            pbLabel.Content = string.Format("Finished Indexing {0} files in {1} folder - Ready to play.", fm.filesCount, fm.foldersCount);
 
-                    Dispatcher.Invoke(
-                      System.Windows.Threading.DispatcherPriority.Normal,
-                     new Action(
-                delegate()
-                {
-                    loadBTN.IsEnabled = true;
-                    pb.IsIndeterminate = false;
-                    pb.IsEnabled = false;
-                    runCheck = false;
-                    pbLabel.Content = string.Format("Finished Indexing {0} files in {1} folder - Ready to play.", fm.filesCount, fm.foldersCount);
-
-                }
-                 ));
-
-                }
-            }
         }
+         ));
+
+        }
+
+
 
 
     }

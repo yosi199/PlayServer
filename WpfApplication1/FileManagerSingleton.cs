@@ -6,16 +6,15 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace WpfApplication1
+namespace PlayServer
 {
 
     public class FileManger
     {
         private static FileManger instance;
-        private Thread loadFiles = null;
         private MainWindow mainW = null;
-        private int fileCount = 0;
-        private int folderCount = 0;
+        private int fileCount;
+        private int folderCount;
 
 
         public int filesCount { get { return fileCount; } }
@@ -43,14 +42,16 @@ namespace WpfApplication1
         }
 
         /// <summary>
-        /// starts a new thread to load files asyncrounsly 
+        /// starts a new Task to load files asyncrounsly 
         /// </summary>
         /// <param name="di">DirectoryInfo to look for files in</param>
         public void loadFromDirAsync(DirectoryInfo di)
         {
-            loadFiles = new Thread(() => FullDirList(di, "*.mp3"));
-            loadFiles.Start();
-            loadFiles.Name = "loadFromDirAsync";
+
+            fileCount = 0;
+            folderCount = 0;
+            Task loadDirAsync = new Task(() => FullDirList(di, "*.mp3"));
+            loadDirAsync.Start();
 
         }
 
@@ -67,7 +68,6 @@ namespace WpfApplication1
                 {
                     files.Add(f);
                     fileCount++;
-                    //Console.WriteLine("added - " + f.ToString());
 
                     // Update progressBar Label
                     mainW.Dispatcher.Invoke(
@@ -85,8 +85,13 @@ namespace WpfApplication1
 
             catch
             {
-                Console.WriteLine("Directory {0}  \n could not be accessed!!!!", dir.FullName);
+                //Console.WriteLine("Directory {0}  \n could not be accessed!!!!", dir.FullName);
                 return;
+            }
+
+            finally
+            {
+                mainW.load();
             }
 
 
@@ -96,21 +101,12 @@ namespace WpfApplication1
                 folders.Add(d);
                 folderCount++;
                 FullDirList(d, searchPattern);
+
             }
 
- 
+
+
         }
-
-        /// <summary>
-        /// Checks if the async file loading thread still runs
-        /// </summary>
-        /// <returns>bool running or not</returns>
-        public bool isThreadStillLoading()
-        {
-            return (loadFiles.IsAlive);
-        }
-
-
 
     }
 }
