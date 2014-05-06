@@ -19,7 +19,7 @@ namespace WpfApplication1.Network
         public const int BufferSize = 1024;
         // Recieve buffer
         public byte[] buffer = new byte[BufferSize];
-        // Recieved data string
+        // Recieved data string 
         public StringBuilder sb = new StringBuilder();
 
     }
@@ -73,6 +73,7 @@ namespace WpfApplication1.Network
                     listener.BeginAccept(new AsyncCallback(AcceptCallback), listener);
 
 
+
                     allDone.WaitOne();
                 }
             }
@@ -80,6 +81,7 @@ namespace WpfApplication1.Network
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
+                StartListening();
             }
 
 
@@ -92,7 +94,21 @@ namespace WpfApplication1.Network
 
             // Get the socket that handles the client request.
             Socket listener = (Socket)ar.AsyncState;
-            Socket handler = listener.EndAccept(ar);
+            Socket handler = null;
+
+     
+
+            try
+            {
+                handler = listener.EndAccept(ar);
+                if (handler.Connected)
+                {
+                    mainW.UpdateSocketLblInfo("Connected");
+
+                }
+            }
+
+            catch (Exception e) { Console.WriteLine(e.ToString()); }
 
             // Create the state object.
             StateObject state = new StateObject();
@@ -109,35 +125,69 @@ namespace WpfApplication1.Network
             // from the asynchronous state object.
             StateObject state = (StateObject)ar.AsyncState;
             Socket handler = state.workSocket;
+            int bytesRead = 0;
+
+
 
             // Read data from the client socket. 
-            int bytesRead = handler.EndReceive(ar);
-
-            if (bytesRead > 0)
+            try
             {
-                // There  might be more data, so store the data received so far.
-                state.sb.Append(Encoding.ASCII.GetString(
-                    state.buffer, 0, bytesRead));
+                bytesRead = handler.EndReceive(ar);
+                Console.WriteLine(Encoding.ASCII.GetString(
+                        state.buffer, 0, bytesRead));
 
-                // Check for end-of-file tag. If it is not there, read 
-                // more data.
-                content = state.sb.ToString();
-                if (content.IndexOf("<EOF>") > -1)
-                {
-                    // All the data has been read from the 
-                    // client. Display it on the console.
-                    Console.WriteLine("Read {0} bytes from socket. \n Data : {1}",
-                        content.Length, content);
-                    // Echo the data back to the client.
-                    Send(handler, content);
-                }
-                else
-                {
-                    // Not all data received. Get more.
-                    handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                    new AsyncCallback(ReadCallback), state);
-                }
+                mainW.UpdateSocketLblInfo(Encoding.ASCII.GetString(
+                        state.buffer, 0, bytesRead) + " Connected");
             }
+
+            catch (Exception e) { Console.WriteLine(e.ToString()); }
+
+
+            switch(Encoding.ASCII.GetString(
+                        state.buffer, 0, bytesRead))
+            {
+                case "play": Send(handler, "Playing!"); break;
+                case "stop": Send(handler, "Stopping!"); break;
+                case "back": Send(handler, "back!"); break;
+                case "forward": Send(handler, "forward!"); break;
+                case "disconnect": handler.Close(); break;
+                case "connect": handler.Close(); break;
+
+
+                
+
+
+            }
+
+            handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+               new AsyncCallback(ReadCallback), state);
+
+            //if (bytesRead > 0)
+            //{
+            //     There  might be more data, so store the data received so far.
+            //    state.sb.Append(Encoding.ASCII.GetString(
+            //        state.buffer, 0, bytesRead));
+
+            //     Check for end-of-file tag. If it is not there, read 
+            //     more data.
+            //    content = state.sb.ToString();
+            //    if (content.IndexOf("<EOF>") > -1)
+            //    {
+            //        // All the data has been read from the 
+            //        // client. Display it on the console.
+            //        Console.WriteLine("Read {0} bytes from socket. \n Data : {1}",
+            //            content.Length, content);
+            //        // Echo the data back to the client.
+            //        Send(handler, content);
+            //    }
+            //    else
+            //    {
+            //        // Not all data received. Get more.
+            //        handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+            //        new AsyncCallback(ReadCallback), state);
+            //    }
+
+            //}
         }
 
         private static void Send(Socket handler, String data)

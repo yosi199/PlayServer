@@ -7,18 +7,18 @@
             <ImageBrush ImageSource="2.jpg"/>
         </Grid.Background>
         <Grid.ColumnDefinitions>
-           
+
             <ColumnDefinition Width="490"/>
 
         </Grid.ColumnDefinitions>
         <ProgressBar HorizontalAlignment="Center" Height="17" VerticalAlignment="Bottom" Margin="10,0,11,10" Width="460" Name="pb" IsEnabled="False" Grid.ColumnSpan="2" />
-        <Label Focusable="True" Content="" HorizontalAlignment="Left" Margin="10,0,0,30" VerticalAlignment="Bottom" Name="pbLabel" FontSize="15" FontFamily="Helvetica Neue" Foreground="White" Grid.ColumnSpan="2"/>
-        <Label Focusable="True" Content="" HorizontalAlignment="Left" Margin="10,0,0,60" VerticalAlignment="Bottom" Name="SocketInfo" FontSize="15" FontFamily="Helvetica Neue" Foreground="White" Grid.ColumnSpan="2"/>
+
 
         <Grid HorizontalAlignment="Left" Height="100" Margin="10,10,-1,0" VerticalAlignment="Top" Width="472" Grid.ColumnSpan="2">
-            <Button Content="Load Files" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="104" Click="loadDirBtn" Height="35" x:Name="loadBTN" Foreground="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}" Margin="0,0,368,65" Background="#FFFF4455" BorderBrush="{x:Null}" BorderThickness="8,1,1,1" Opacity="0.8"/>
+            <Button Content="Load Files" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="104" Click="loadDirBtn" Height="35" x:Name="loadBTN" Foreground="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}" Margin="1,0,367,65" Background="#FFFF4455" BorderBrush="{x:Null}" BorderThickness="8,1,1,1" Opacity="0.8"/>
             <Button Content="Play" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="104" Click="PlayBtn" Height="35" x:Name="Play" Foreground="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}" Margin="109,0,259,65" Background="#FFFF4455" BorderBrush="{x:Null}" Opacity="0.8" Visibility="Hidden"/>
-
+            <Label Focusable="True" Content="Status" HorizontalAlignment="Left" Margin="0,0,0,-176" VerticalAlignment="Bottom" Name="pbLabel" FontSize="15" FontFamily="Helvetica Neue" Foreground="White" Width="472"/>
+            <Label Focusable="True" Content="ClientInfo" HorizontalAlignment="Left" VerticalAlignment="Bottom" Name="SocketInfo" FontSize="15" FontFamily="Helvetica Neue" Foreground="White" Width="472" Margin="0,0,0,20"/>
 
         </Grid>
 
