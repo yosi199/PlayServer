@@ -91,7 +91,7 @@ namespace PlayServer
 
             finally
             {
-                mainW.load();
+                mainW.UpdateFromNewThread();
             }
 
 

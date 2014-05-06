@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.Windows.Forms;
 using System.IO;
 using System.Threading;
+using WpfApplication1.Network;
 
 namespace PlayServer
 {
@@ -25,11 +26,16 @@ namespace PlayServer
     {
 
         private FileManger fm;
+        private AsyncSocketListener server;
 
         public MainWindow()
         {
             fm = FileManger.Instance;
             fm.registerUI(this);
+            Task t = new Task(() => server = new AsyncSocketListener());
+            AsyncSocketListener.registerUI(this);
+            t.Start();
+
         }
 
         private void loadDirBtn(object sender, RoutedEventArgs e)
@@ -38,16 +44,26 @@ namespace PlayServer
             // Create a dialog to choose dir and load songs in a new thread
             var dialog = new System.Windows.Forms.FolderBrowserDialog();
             System.Windows.Forms.DialogResult result = dialog.ShowDialog();
-            // Call File Manager Async file loader
-            fm.loadFromDirAsync(new DirectoryInfo(dialog.SelectedPath));
-            // Update UI
-            pb.IsIndeterminate = true;
-            pb.IsEnabled = true;
-            loadBTN.IsEnabled = false;
+
+
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                // Call File Manager Async file loader
+                fm.loadFromDirAsync(new DirectoryInfo(dialog.SelectedPath));
+                // Update UI
+                pb.IsIndeterminate = true;
+                pb.IsEnabled = true;
+                loadBTN.IsEnabled = false;
+
+            }
+        }
+
+        private void PlayBtn(object sender, RoutedEventArgs e)
+        {
 
         }
 
-        public void load()
+        public void UpdateFromNewThread()
         {
 
             Dispatcher.Invoke(
@@ -59,13 +75,27 @@ namespace PlayServer
             pb.IsIndeterminate = false;
             pb.IsEnabled = false;
             pbLabel.Content = string.Format("Finished Indexing {0} files in {1} folder - Ready to play.", fm.filesCount, fm.foldersCount);
+            Play.Visibility = Visibility.Visible;
+            pbLabel.Focus();
 
         }
          ));
 
         }
 
+        public void UpdateSocketLblInfo(string message)
+        {
+            Dispatcher.Invoke(
+           System.Windows.Threading.DispatcherPriority.Normal,
+          new Action(
+              delegate()
+              {
+                  SocketInfo.Content = message;
 
+              }
+      ));
+
+        }
 
 
     }
