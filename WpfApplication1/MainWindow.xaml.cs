@@ -38,6 +38,11 @@ namespace PlayServer
 
         }
 
+        /// <summary>
+        /// opens load from directory dialog
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void loadDirBtn(object sender, RoutedEventArgs e)
         {
 
@@ -58,6 +63,11 @@ namespace PlayServer
             }
         }
 
+        /// <summary>
+        /// A btn interface to start playing the track
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void PlayBtn(object sender, RoutedEventArgs e)
         {
 
