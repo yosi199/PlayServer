@@ -16,6 +16,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Threading;
 using WpfApplication1.Network;
+using WpfApplication1.Player;
 
 namespace PlayServer
 {
@@ -27,14 +28,21 @@ namespace PlayServer
 
         private FileManger fm;
         private AsyncSocketListener server;
+        private Player player;
 
         public MainWindow()
         {
+            // Get the FileManager Instance and register the UI
             fm = FileManger.Instance;
             fm.registerUI(this);
+
+            // Start the server to listen / Register UI
             Task t = new Task(() => server = new AsyncSocketListener());
             AsyncSocketListener.registerUI(this);
             t.Start();
+
+            // Create a new Player instance
+             player = new Player();
 
         }
 
@@ -64,13 +72,13 @@ namespace PlayServer
         }
 
         /// <summary>
-        /// A btn interface to start playing the track
+        /// Pass the play command to the Player instance
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void PlayBtn(object sender, RoutedEventArgs e)
         {
-
+            player.Play();
         }
 
         public void UpdateFromNewThread()
