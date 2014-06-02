@@ -16,25 +16,33 @@ using System.Windows.Forms;
 using System.IO;
 using System.Threading;
 using WpfApplication1.Network;
+using WpfApplication1.Player;
 
 namespace PlayServer
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class PlayerUI : Window
     {
 
         private FileManger fm;
         private AsyncSocketListener server;
+        private Player player;
 
-        public MainWindow()
+        public PlayerUI()
         {
+            //get the instance of the file manager singelton and register the UI
             fm = FileManger.Instance;
             fm.registerUI(this);
+
+            // Start the server and register the UI
             Task t = new Task(() => server = new AsyncSocketListener());
             AsyncSocketListener.registerUI(this);
             t.Start();
+
+            // get the player instance
+            player = new Player();
 
         }
 
@@ -70,10 +78,10 @@ namespace PlayServer
         /// <param name="e"></param>
         private void PlayBtn(object sender, RoutedEventArgs e)
         {
-
+            player.Play();
         }
 
-        public void UpdateFromNewThread()
+        public void UpdateUIFromNewThread()
         {
 
             Dispatcher.Invoke(

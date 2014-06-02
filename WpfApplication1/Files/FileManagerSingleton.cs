@@ -12,14 +12,21 @@ namespace PlayServer
     public class FileManger
     {
         private static FileManger instance;
-        private MainWindow mainW = null;
+        private PlayerUI mainW = null;
         private int fileCount;
         private int folderCount;
 
+        // Lists for collecting files and folders data
 
+        // TODO - MUST SYNCHRONIZE ACCESS TO THESE LISTS. PROBABLY USING "ReaderWriterLockSlim" CLASS AND CONDITION OBJECTS
+        private List<FileInfo> files = new List<FileInfo>();
+        private List<DirectoryInfo> folders = new List<DirectoryInfo>();
+
+
+        // public properties
         public int filesCount { get { return fileCount; } }
         public int foldersCount { get { return folderCount; } }
-
+        public List<FileInfo> FilesInfoList { get { return files; } }
 
         private FileManger() { }
 
@@ -36,7 +43,7 @@ namespace PlayServer
         }
 
         // Pass Ui instance to use the dispatcher
-        public void registerUI(MainWindow main)
+        public void registerUI(PlayerUI main)
         {
             this.mainW = main;
         }
@@ -55,9 +62,7 @@ namespace PlayServer
 
         }
 
-        // Lists for collecting files and folders data
-        List<FileInfo> files = new List<FileInfo>();
-        List<DirectoryInfo> folders = new List<DirectoryInfo>();
+      
 
         private void FullDirList(DirectoryInfo dir, string searchPattern)
         {
@@ -91,7 +96,7 @@ namespace PlayServer
 
             finally
             {
-                mainW.UpdateFromNewThread();
+                mainW.UpdateUIFromNewThread();
             }
 
 

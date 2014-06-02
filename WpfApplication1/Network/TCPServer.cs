@@ -30,7 +30,7 @@ namespace WpfApplication1.Network
         // Thread signal.
         public static ManualResetEvent allDone = new ManualResetEvent(false);
 
-        private static MainWindow mainW;
+        private static PlayerUI mainW;
 
         public AsyncSocketListener()
         {
@@ -38,7 +38,7 @@ namespace WpfApplication1.Network
 
         }
 
-        public static void registerUI(MainWindow main)
+        public static void registerUI(PlayerUI main)
         {
             mainW = main;
         }
@@ -103,7 +103,7 @@ namespace WpfApplication1.Network
                 handler = listener.EndAccept(ar);
                 if (handler.Connected)
                 {
-                    mainW.UpdateSocketLblInfo("Connected");
+                    mainW.UpdateSocketLblInfo("connected");
 
                 }
             }
