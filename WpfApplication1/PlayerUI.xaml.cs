@@ -42,7 +42,7 @@ namespace PlayServer
             t.Start();
 
             // get the player instance
-            player = new Player();
+            player = Player.Instance;
 
         }
 

@@ -27,6 +27,11 @@ namespace WpfApplication1.Network
 
     public class AsyncSocketListener
     {
+
+       
+
+        private static Socket listener;
+
         // Thread signal.
         public static ManualResetEvent allDone = new ManualResetEvent(false);
 
@@ -54,7 +59,10 @@ namespace WpfApplication1.Network
             IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 5555);
 
             // Create a TCP socket
-            Socket listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            if (listener == null) { 
+             listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        }
+            else Console.WriteLine("Only 1 client is allowed at once");
 
             // Bind the socket to the local endpoint and listen for incoming connections
 
@@ -87,6 +95,7 @@ namespace WpfApplication1.Network
 
         }
 
+        // TODO - I NEED TO LOCK IT FOR 1 CLIENT ONLY
         public static void AcceptCallback(IAsyncResult ar)
         {
             // Signal the main thread to continue.
@@ -137,7 +146,7 @@ namespace WpfApplication1.Network
                         state.buffer, 0, bytesRead));
 
                 mainW.UpdateSocketLblInfo(Encoding.ASCII.GetString(
-                        state.buffer, 0, bytesRead) + " Connected");
+                        state.buffer, 0, bytesRead) + "Connected");
             }
 
             catch (Exception e) { Console.WriteLine(e.ToString()); }
@@ -146,7 +155,9 @@ namespace WpfApplication1.Network
             switch(Encoding.ASCII.GetString(
                         state.buffer, 0, bytesRead))
             {
-                case "play": Send(handler, "Playing!"); break;
+                case "play": Send(handler, "Playing!");
+                    Player.Player.Instance.Play(); 
+                    break;
                 case "stop": Send(handler, "Stopping!"); break;
                 case "back": Send(handler, "back!"); break;
                 case "forward": Send(handler, "forward!"); break;

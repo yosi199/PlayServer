@@ -15,10 +15,28 @@ namespace WpfApplication1.Player
     {
 
         private static FileManger instance = FileManger.Instance;
+        private static Player playerInstance;
 
         private int _currentPosition = 0;
 
-        public void Play()
+
+        private Player() { }
+
+        public static Player Instance
+        {
+            get
+            {
+                if (playerInstance == null)
+                {
+                    playerInstance = new Player();
+                }
+                return playerInstance;
+
+
+            }
+        }
+
+        private void initPlayer()
         {
             try
             {
@@ -32,6 +50,11 @@ namespace WpfApplication1.Player
             {
                 Console.WriteLine(ex.TargetSite.ToString());
             }
+        }
+
+        public void Play() {
+            Console.WriteLine("Play pressed");
+
         }
 
         public void Stop()
