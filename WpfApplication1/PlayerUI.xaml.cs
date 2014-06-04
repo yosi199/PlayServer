@@ -21,7 +21,7 @@ using WpfApplication1.Player;
 namespace PlayServer
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for UI
     /// </summary>
     public partial class PlayerUI : Window
     {
@@ -81,10 +81,10 @@ namespace PlayServer
             player.Play();
         }
 
-        public void UpdateUIFromNewThread()
+        public void UpdateUIFromNewThread(String message)
         {
 
-            Dispatcher.Invoke(
+            Dispatcher.BeginInvoke(
               System.Windows.Threading.DispatcherPriority.Normal,
              new Action(
         delegate()
@@ -92,7 +92,7 @@ namespace PlayServer
             loadBTN.IsEnabled = true;
             pb.IsIndeterminate = false;
             pb.IsEnabled = false;
-            pbLabel.Content = string.Format("Finished Indexing {0} files in {1} folder - Ready to play.", fm.filesCount, fm.foldersCount);
+            pbLabel.Content = string.Format(message, fm.filesCount, fm.foldersCount);
             Play.Visibility = Visibility.Visible;
             pbLabel.Focus();
 

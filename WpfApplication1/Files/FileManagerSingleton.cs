@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using WpfApplication1.Utilities;
 
 namespace PlayServer
 {
@@ -21,6 +22,8 @@ namespace PlayServer
         // TODO - MUST SYNCHRONIZE ACCESS TO THESE LISTS. PROBABLY USING "ReaderWriterLockSlim" CLASS AND CONDITION OBJECTS
         private List<FileInfo> files = new List<FileInfo>();
         private List<DirectoryInfo> folders = new List<DirectoryInfo>();
+
+        private Object _locker = new Object();
 
 
         // public properties
@@ -55,62 +58,56 @@ namespace PlayServer
         public void loadFromDirAsync(DirectoryInfo di)
         {
 
-            fileCount = 0;
-            folderCount = 0;
-            Task loadDirAsync = new Task(() => FullDirList(di, "*.mp3"));
-            loadDirAsync.Start();
-
+            lock (_locker)
+            {
+                fileCount = 0;
+                folderCount = 0;
+                Task loadDirAsync = new Task(() => FullDirList(di, "*.mp3"));
+                loadDirAsync.Start();
+            }
         }
 
-      
+
 
         private void FullDirList(DirectoryInfo dir, string searchPattern)
         {
 
-            try
+            lock (_locker)
             {
-                foreach (FileInfo f in dir.GetFiles(searchPattern))
+                try
                 {
-                    files.Add(f);
-                    fileCount++;
+                    foreach (FileInfo f in dir.GetFiles(searchPattern))
+                    {
+                        files.Add(f);
+                        fileCount++;
 
-                    // Update progressBar Label
-                    mainW.Dispatcher.Invoke(
-                      System.Windows.Threading.DispatcherPriority.Normal,
-                     new Action(
-                delegate()
+                    }
+                }
+
+
+                catch
                 {
-                    mainW.pbLabel.Content = "Indexing - " + f.ToString();
+                    //Console.WriteLine("Directory {0}  \n could not be accessed!!!!", dir.FullName);
+                    return;
+                }
+
+                finally
+                {
+                    mainW.UpdateUIFromNewThread(Constants.Indexing_ProgressMSG);
+                }
+
+
+                // process each directory
+                foreach (DirectoryInfo d in dir.GetDirectories())
+                {
+                    folders.Add(d);
+                    folderCount++;
+                    FullDirList(d, searchPattern);
 
                 }
-                 ));
 
-                }
-            }
-
-            catch
-            {
-                //Console.WriteLine("Directory {0}  \n could not be accessed!!!!", dir.FullName);
-                return;
-            }
-
-            finally
-            {
-                mainW.UpdateUIFromNewThread();
-            }
-
-
-            // process each directory
-            foreach (DirectoryInfo d in dir.GetDirectories())
-            {
-                folders.Add(d);
-                folderCount++;
-                FullDirList(d, searchPattern);
 
             }
-
-
-
         }
 
     }

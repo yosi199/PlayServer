@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Windows.Media;
 
 namespace WpfApplication1.Player
 {
@@ -17,10 +18,15 @@ namespace WpfApplication1.Player
         private static FileManger instance = FileManger.Instance;
         private static Player playerInstance;
 
+        private object _locker = new object();
+
         private int _currentPosition = 0;
+        private String filePAth;
+
+        private MediaPlayer mp;
 
 
-        private Player() { }
+        private Player() { mp = new MediaPlayer(); }
 
         public static Player Instance
         {
@@ -41,8 +47,15 @@ namespace WpfApplication1.Player
             try
             {
                 // TODO - MUST HAVE CONDITION OBJECT LOCKING TO MAKE SURE LIST ISN'T EMPTY
-                String filePAth = instance.FilesInfoList[_currentPosition].FullName.ToString();
-                Console.WriteLine(filePAth);
+
+                lock (_locker)
+                {
+                    filePAth = instance.FilesInfoList[_currentPosition].FullName.ToString();
+                    Uri track = new Uri(filePAth);
+                    mp.Open(track);
+                    mp.Play();
+                }
+              
             }
 
 
@@ -52,8 +65,9 @@ namespace WpfApplication1.Player
             }
         }
 
-        public void Play() {
-            Console.WriteLine("Play pressed");
+        public void Play()
+        {
+            initPlayer();
 
         }
 
