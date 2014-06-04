@@ -7,8 +7,9 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using PlayServer.Player;
 
-namespace WpfApplication1.Network
+namespace PlayServer.Network
 {
     public class StateObject
     {
@@ -28,7 +29,7 @@ namespace WpfApplication1.Network
     public class AsyncSocketListener
     {
 
-       
+
 
         private static Socket listener;
 
@@ -36,6 +37,9 @@ namespace WpfApplication1.Network
         public static ManualResetEvent allDone = new ManualResetEvent(false);
 
         private static PlayerUI mainW;
+        private static Player.MediaPlayer player = Player.MediaPlayer.Instance;
+
+
 
         public AsyncSocketListener()
         {
@@ -59,9 +63,10 @@ namespace WpfApplication1.Network
             IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 5555);
 
             // Create a TCP socket
-            if (listener == null) { 
-             listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        }
+            if (listener == null)
+            {
+                listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            }
             else Console.WriteLine("Only 1 client is allowed at once");
 
             // Bind the socket to the local endpoint and listen for incoming connections
@@ -105,7 +110,7 @@ namespace WpfApplication1.Network
             Socket listener = (Socket)ar.AsyncState;
             Socket handler = null;
 
-     
+
 
             try
             {
@@ -142,8 +147,28 @@ namespace WpfApplication1.Network
             try
             {
                 bytesRead = handler.EndReceive(ar);
-                Console.WriteLine(Encoding.ASCII.GetString(
-                        state.buffer, 0, bytesRead));
+                string getStringMessage = Encoding.ASCII.GetString(
+              state.buffer, 0, bytesRead).ToString();
+
+
+                switch (getStringMessage)
+                {
+                    case "play\n": Player.MediaPlayer.Instance.Play(); Console.WriteLine("In Play case");
+                        Send(handler, "Playing!");
+                        break;
+                    case "stop": Send(handler, "Stopping!"); break;
+                    case "back": Send(handler, "back!"); break;
+                    case "forward": Send(handler, "forward!"); break;
+                    case "disconnect": handler.Close(); break;
+                    case "connect": handler.Close(); break;
+
+
+
+
+
+
+
+                }
 
                 mainW.UpdateSocketLblInfo(Encoding.ASCII.GetString(
                         state.buffer, 0, bytesRead) + "Connected");
@@ -152,26 +177,15 @@ namespace WpfApplication1.Network
             catch (Exception e) { Console.WriteLine(e.ToString()); }
 
 
-            switch(Encoding.ASCII.GetString(
-                        state.buffer, 0, bytesRead))
+
+            try
             {
-                case "play": Send(handler, "Playing!");
-                    Player.Player.Instance.Play(); 
-                    break;
-                case "stop": Send(handler, "Stopping!"); break;
-                case "back": Send(handler, "back!"); break;
-                case "forward": Send(handler, "forward!"); break;
-                case "disconnect": handler.Close(); break;
-                case "connect": handler.Close(); break;
-
-
-                
-
-
+                handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+                   new AsyncCallback(ReadCallback), state);
             }
 
-            handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-               new AsyncCallback(ReadCallback), state);
+            catch (Exception ex) { Console.WriteLine(ex.ToString()); }
+
 
             //if (bytesRead > 0)
             //{

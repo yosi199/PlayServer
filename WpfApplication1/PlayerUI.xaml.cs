@@ -15,8 +15,8 @@ using System.Windows.Shapes;
 using System.Windows.Forms;
 using System.IO;
 using System.Threading;
-using WpfApplication1.Network;
-using WpfApplication1.Player;
+using PlayServer.Network;
+using PlayServer.Player;
 
 namespace PlayServer
 {
@@ -28,7 +28,7 @@ namespace PlayServer
 
         private FileManger fm;
         private AsyncSocketListener server;
-        private Player player;
+        private PlayServer.Player.MediaPlayer player;
 
         public PlayerUI()
         {
@@ -42,7 +42,7 @@ namespace PlayServer
             t.Start();
 
             // get the player instance
-            player = Player.Instance;
+            player = PlayServer.Player.MediaPlayer.Instance;
 
         }
 

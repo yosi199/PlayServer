@@ -7,34 +7,34 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Windows.Media;
 
-namespace WpfApplication1.Player
+namespace PlayServer.Player
 {
     /// <summary>
     ///  Controls media playback logic
     /// </summary>
-    class Player : IPlayCommands
+    class MediaPlayer : IPlayCommands
     {
 
         private static FileManger instance = FileManger.Instance;
-        private static Player playerInstance;
+        private static MediaPlayer playerInstance;
 
         private object _locker = new object();
 
         private int _currentPosition = 0;
         private String filePAth;
 
-        private MediaPlayer mp;
+        private static System.Windows.Media.MediaPlayer mp = new System.Windows.Media.MediaPlayer();
 
 
-        private Player() { mp = new MediaPlayer(); }
+        private MediaPlayer() { }
 
-        public static Player Instance
+        public static MediaPlayer Instance
         {
             get
             {
                 if (playerInstance == null)
                 {
-                    playerInstance = new Player();
+                    playerInstance = new MediaPlayer();
                 }
                 return playerInstance;
 
@@ -53,9 +53,9 @@ namespace WpfApplication1.Player
                     filePAth = instance.FilesInfoList[_currentPosition].FullName.ToString();
                     Uri track = new Uri(filePAth);
                     mp.Open(track);
-                    mp.Play();
+                    //mp.Play();
                 }
-              
+
             }
 
 
@@ -63,7 +63,11 @@ namespace WpfApplication1.Player
             {
                 Console.WriteLine(ex.TargetSite.ToString());
             }
+
+            finally { }
         }
+
+        
 
         public void Play()
         {
