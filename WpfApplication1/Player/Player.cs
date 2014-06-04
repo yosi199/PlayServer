@@ -50,10 +50,13 @@ namespace PlayServer.Player
 
                 lock (_locker)
                 {
-                    filePAth = instance.FilesInfoList[_currentPosition].FullName.ToString();
-                    Uri track = new Uri(filePAth);
-                    mp.Open(track);
-                    //mp.Play();
+                    if (instance.FilesInfoList.Count > 0)
+                    {
+                        filePAth = instance.FilesInfoList[_currentPosition].FullName.ToString();
+                        Uri track = new Uri(filePAth);
+                        mp.Open(track);
+                        mp.Play();
+                    }
                 }
 
             }
@@ -67,7 +70,7 @@ namespace PlayServer.Player
             finally { }
         }
 
-        
+
 
         public void Play()
         {

@@ -26,6 +26,8 @@ namespace PlayServer
         private Object _locker = new Object();
 
 
+
+
         // public properties
         public int filesCount { get { return fileCount; } }
         public int foldersCount { get { return folderCount; } }
@@ -85,6 +87,7 @@ namespace PlayServer
                 }
 
 
+
                 catch
                 {
                     //Console.WriteLine("Directory {0}  \n could not be accessed!!!!", dir.FullName);
@@ -95,19 +98,21 @@ namespace PlayServer
                 {
                     mainW.UpdateUIFromNewThread(Constants.Indexing_ProgressMSG);
                 }
+            }
 
 
-                // process each directory
-                foreach (DirectoryInfo d in dir.GetDirectories())
-                {
-                    folders.Add(d);
-                    folderCount++;
-                    FullDirList(d, searchPattern);
+            // process each directory
+            foreach (DirectoryInfo d in dir.GetDirectories())
+            {
+                folders.Add(d);
+                folderCount++;
 
-                }
-
+                FullDirList(d, searchPattern);
 
             }
+
+
+
         }
 
     }
