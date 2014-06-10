@@ -17,6 +17,8 @@ using System.IO;
 using System.Threading;
 using PlayServer.Network;
 using PlayServer.Player;
+using PlayServer.Files;
+using PlayServer.Utilities;
 
 namespace PlayServer
 {
@@ -28,10 +30,14 @@ namespace PlayServer
 
         private FileManger fm;
         private AsyncSocketListener server;
-        private PlayServer.Player.MediaPlayer player;
+        private MediaPlayerController player;
+
 
         public PlayerUI()
         {
+
+            InitializeComponent();
+
             //get the instance of the file manager singelton and register the UI
             fm = FileManger.Instance;
             fm.registerUI(this);
@@ -42,7 +48,11 @@ namespace PlayServer
             t.Start();
 
             // get the player instance
-            player = PlayServer.Player.MediaPlayer.Instance;
+            player = MediaPlayerController.Instance;
+
+            // Get auto incremented version number and display at title
+            string version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            Title = String.Format(Constants.title, version);
 
         }
 
@@ -53,6 +63,7 @@ namespace PlayServer
         /// <param name="e"></param>
         private void loadDirBtn(object sender, RoutedEventArgs e)
         {
+
 
             // Create a dialog to choose dir and load songs in a new thread
             var dialog = new System.Windows.Forms.FolderBrowserDialog();

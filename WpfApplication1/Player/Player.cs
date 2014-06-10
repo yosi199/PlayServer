@@ -6,17 +6,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Windows.Media;
+using PlayServer.Files;
 
 namespace PlayServer.Player
 {
     /// <summary>
     ///  Controls media playback logic
     /// </summary>
-    class MediaPlayer : IPlayCommands
+    class MediaPlayerController : IPlayCommands
     {
 
         private static FileManger instance = FileManger.Instance;
-        private static MediaPlayer playerInstance;
+        private static MediaPlayerController playerInstance;
 
         private object _locker = new object();
 
@@ -26,15 +27,15 @@ namespace PlayServer.Player
         private static System.Windows.Media.MediaPlayer mp = new System.Windows.Media.MediaPlayer();
 
 
-        private MediaPlayer() { }
+        private MediaPlayerController() { }
 
-        public static MediaPlayer Instance
+        public static MediaPlayerController Instance
         {
             get
             {
                 if (playerInstance == null)
                 {
-                    playerInstance = new MediaPlayer();
+                    playerInstance = new MediaPlayerController();
                 }
                 return playerInstance;
 
@@ -80,7 +81,15 @@ namespace PlayServer.Player
 
         public void Stop()
         {
-            throw new NotImplementedException();
+            try
+            {
+                mp.Stop();
+            }
+
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message.ToString());
+            }
         }
 
         public void Rewind()

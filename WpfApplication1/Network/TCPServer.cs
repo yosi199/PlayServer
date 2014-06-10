@@ -37,7 +37,7 @@ namespace PlayServer.Network
         public static ManualResetEvent allDone = new ManualResetEvent(false);
 
         private static PlayerUI mainW;
-        private static Player.MediaPlayer player = Player.MediaPlayer.Instance;
+        private static Player.MediaPlayerController player = Player.MediaPlayerController.Instance;
 
 
 
@@ -153,10 +153,11 @@ namespace PlayServer.Network
 
                 switch (getStringMessage)
                 {
-                    case "play\n": mainW.Dispatcher.BeginInvoke(new Action(() => MediaPlayer.Instance.Play())); Console.WriteLine("In Play case");
+                    case "play\n": mainW.Dispatcher.BeginInvoke(new Action(() => MediaPlayerController.Instance.Play()));
                         Send(handler, "Playing!");
                         break;
-                    case "stop": Send(handler, "Stopping!"); break;
+                    case "stop": mainW.Dispatcher.BeginInvoke(new Action(() => MediaPlayerController.Instance.Stop()));
+                        Send(handler, "Stopped!"); break;
                     case "back": Send(handler, "back!"); break;
                     case "forward": Send(handler, "forward!"); break;
                     case "disconnect": handler.Close(); break;
@@ -207,6 +208,7 @@ namespace PlayServer.Network
                 }
                 else
                 {
+
                     // Not all data received. Get more.
                     handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
                     new AsyncCallback(ReadCallback), state);

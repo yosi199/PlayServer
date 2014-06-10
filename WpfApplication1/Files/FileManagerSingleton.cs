@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using PlayServer.Utilities;
 
-namespace PlayServer
+namespace PlayServer.Files
 {
 
     public class FileManger
