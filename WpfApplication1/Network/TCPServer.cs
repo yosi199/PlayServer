@@ -165,10 +165,6 @@ namespace PlayServer.Network
 
 
 
-
-
-
-
                 }
 
                 mainW.UpdateSocketLblInfo(Encoding.ASCII.GetString(
