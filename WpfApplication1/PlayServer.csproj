@@ -96,7 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Network\TCPServer.cs" />
-    <Compile Include="Player\Player.cs" />
+    <Compile Include="Player\LocalPlayer.cs" />
     <Compile Include="Player\IPlayCommands.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

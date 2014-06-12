@@ -65,11 +65,11 @@ namespace PlayServer.Files
                 // Index all files to JSON in a list Asynchronosly 
                 fileCount = 0;
                 folderCount = 1;
-                Task loadDirAsync = new Task(() => FullDirList(di, "*.mp3"));
+                Task loadDirAsync = new Task(() => getMusicFromPath(di));
                 loadDirAsync.Start();
 
                 // Once Done, update user
-                new Task(() => UpdateUI()).Start();
+                new Task(() => UpdateUI(Constants.Indexing_ProgressMSG)).Start();
 
             }
 
@@ -79,12 +79,19 @@ namespace PlayServer.Files
         /// <summary>
         /// Updates UI when finished indexing files
         /// </summary>
-        private void UpdateUI()
+        private void UpdateUI(String message)
         {
             mCountDown.Wait();
-            mainW.UpdateUIFromNewThread(Constants.Indexing_ProgressMSG);          
+            mainW.UpdateUIFromNewThread(message);
         }
 
+        private void getMusicFromPath(DirectoryInfo di)
+        {
+            FullDirList(di, "*.mp3");
+            mCountDown.Signal();
+
+
+        }
 
         private void FullDirList(DirectoryInfo dir, string searchPattern)
         {
@@ -112,7 +119,7 @@ namespace PlayServer.Files
                             {
                                 artist = tagFile.Tag.Performers[0];
                             }
-                          
+
                             album = tagFile.Tag.Album;
                             title = tagFile.Tag.Title;
                             path = f.FullName.ToString();
@@ -121,7 +128,7 @@ namespace PlayServer.Files
 
                             Song song = new Song(artist, album, title, path, index);
                             songJSON = song.ToJson<Song>();
-                         
+
                         }
 
                         catch (Exception e)
@@ -135,8 +142,6 @@ namespace PlayServer.Files
 
                     }
                 }
-
-
 
                 catch
                 {
@@ -157,7 +162,6 @@ namespace PlayServer.Files
 
             }
 
-            mCountDown.Signal();
 
         }
 

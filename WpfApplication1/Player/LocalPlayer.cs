@@ -14,11 +14,11 @@ namespace PlayServer.Player
     /// <summary>
     ///  Controls media playback logic
     /// </summary>
-    class MediaPlayerClass : IPlayCommands
+    class LocalMediaPlayerClass : IPlayCommands
     {
 
         private static FileManger instance = FileManger.Instance;
-        private static MediaPlayerClass playerInstance;
+        private static LocalMediaPlayerClass playerInstance;
 
         private object _locker = new object();
 
@@ -28,15 +28,15 @@ namespace PlayServer.Player
         private static System.Windows.Media.MediaPlayer mp = new System.Windows.Media.MediaPlayer();
 
 
-        private MediaPlayerClass() { }
+        private LocalMediaPlayerClass() { }
 
-        public static MediaPlayerClass Instance
+        public static LocalMediaPlayerClass Instance
         {
             get
             {
                 if (playerInstance == null)
                 {
-                    playerInstance = new MediaPlayerClass();
+                    playerInstance = new LocalMediaPlayerClass();
                 }
                 return playerInstance;
 
