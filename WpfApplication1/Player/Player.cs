@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Windows.Media;
+using ServiceStack;
 using PlayServer.Files;
 
 namespace PlayServer.Player
@@ -13,29 +14,29 @@ namespace PlayServer.Player
     /// <summary>
     ///  Controls media playback logic
     /// </summary>
-    class MediaPlayerController : IPlayCommands
+    class MediaPlayerClass : IPlayCommands
     {
 
         private static FileManger instance = FileManger.Instance;
-        private static MediaPlayerController playerInstance;
+        private static MediaPlayerClass playerInstance;
 
         private object _locker = new object();
 
         private int _currentPosition = 0;
-        private String filePAth;
+        private String jsonStringFile;
 
         private static System.Windows.Media.MediaPlayer mp = new System.Windows.Media.MediaPlayer();
 
 
-        private MediaPlayerController() { }
+        private MediaPlayerClass() { }
 
-        public static MediaPlayerController Instance
+        public static MediaPlayerClass Instance
         {
             get
             {
                 if (playerInstance == null)
                 {
-                    playerInstance = new MediaPlayerController();
+                    playerInstance = new MediaPlayerClass();
                 }
                 return playerInstance;
 
@@ -53,8 +54,12 @@ namespace PlayServer.Player
                 {
                     if (instance.FilesInfoList.Count > 0)
                     {
-                        filePAth = instance.FilesInfoList[_currentPosition].FullName.ToString();
-                        Uri track = new Uri(filePAth);
+                        // Get file path from Json
+                        jsonStringFile = instance.FilesInfoList[_currentPosition].ToString();
+                        Song currentSong = ServiceStack.Text.JsonSerializer.DeserializeFromString<Song>(jsonStringFile);
+
+                        // Start playing
+                        Uri track = new Uri(currentSong.pathInfo);
                         mp.Open(track);
                         mp.Play();
                     }
@@ -81,15 +86,7 @@ namespace PlayServer.Player
 
         public void Stop()
         {
-            try
-            {
-                mp.Stop();
-            }
-
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message.ToString());
-            }
+            throw new NotImplementedException();
         }
 
         public void Rewind()
@@ -103,3 +100,4 @@ namespace PlayServer.Player
         }
     }
 }
+

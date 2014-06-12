@@ -30,7 +30,7 @@ namespace PlayServer
 
         private FileManger fm;
         private AsyncSocketListener server;
-        private MediaPlayerController player;
+        private MediaPlayerClass player;
 
 
         public PlayerUI()
@@ -48,7 +48,7 @@ namespace PlayServer
             t.Start();
 
             // get the player instance
-            player = MediaPlayerController.Instance;
+            player = MediaPlayerClass.Instance;
 
             // Get auto incremented version number and display at title
             string version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();

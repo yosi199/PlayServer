@@ -79,7 +79,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Files\Song.cs" />
-    <Compile Include="Utilities\Class1.cs" />
+    <Compile Include="Utilities\Constants.cs" />
     <Page Include="PlayerUI.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -126,14 +126,12 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="1.jpg" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="2.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="3.jpg" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
