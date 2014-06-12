@@ -15,34 +15,39 @@ using System.Windows.Shapes;
 using System.Windows.Forms;
 using System.IO;
 using System.Threading;
-using WpfApplication1.Network;
-using WpfApplication1.Player;
+using PlayServer.Network;
+using PlayServer.Player;
 
 namespace PlayServer
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for UI
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class PlayerUI : Window
     {
 
         private FileManger fm;
         private AsyncSocketListener server;
-        private Player player;
+        private PlayServer.Player.MediaPlayer player;
+        static string version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
-        public MainWindow()
+        public PlayerUI()
         {
-            // Get the FileManager Instance and register the UI
+
+            // Set title... NOT WORKING PROPERLY
+            Title = version;
+
+            //get the instance of the file manager singelton and register the UI
             fm = FileManger.Instance;
             fm.registerUI(this);
 
-            // Start the server to listen / Register UI
+            // Start the server and register the UI
             Task t = new Task(() => server = new AsyncSocketListener());
             AsyncSocketListener.registerUI(this);
             t.Start();
 
-            // Create a new Player instance
-             player = new Player();
+            // get the player instance
+            player = PlayServer.Player.MediaPlayer.Instance;
 
         }
 
@@ -72,7 +77,7 @@ namespace PlayServer
         }
 
         /// <summary>
-        /// Pass the play command to the Player instance
+        /// A btn interface to start playing the track
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -81,10 +86,10 @@ namespace PlayServer
             player.Play();
         }
 
-        public void UpdateFromNewThread()
+        public void UpdateUIFromNewThread(String message)
         {
 
-            Dispatcher.Invoke(
+            Dispatcher.BeginInvoke(
               System.Windows.Threading.DispatcherPriority.Normal,
              new Action(
         delegate()
@@ -92,7 +97,7 @@ namespace PlayServer
             loadBTN.IsEnabled = true;
             pb.IsIndeterminate = false;
             pb.IsEnabled = false;
-            pbLabel.Content = string.Format("Finished Indexing {0} files in {1} folder - Ready to play.", fm.filesCount, fm.foldersCount);
+            pbLabel.Content = string.Format(message, fm.filesCount, fm.foldersCount);
             Play.Visibility = Visibility.Visible;
             pbLabel.Focus();
 

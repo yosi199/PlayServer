@@ -7,8 +7,9 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using PlayServer.Player;
 
-namespace WpfApplication1.Network
+namespace PlayServer.Network
 {
     public class StateObject
     {
@@ -27,10 +28,18 @@ namespace WpfApplication1.Network
 
     public class AsyncSocketListener
     {
+
+
+
+        private static Socket listener;
+
         // Thread signal.
         public static ManualResetEvent allDone = new ManualResetEvent(false);
 
-        private static MainWindow mainW;
+        private static PlayerUI mainW;
+        private static Player.MediaPlayer player = Player.MediaPlayer.Instance;
+
+
 
         public AsyncSocketListener()
         {
@@ -38,7 +47,7 @@ namespace WpfApplication1.Network
 
         }
 
-        public static void registerUI(MainWindow main)
+        public static void registerUI(PlayerUI main)
         {
             mainW = main;
         }
@@ -54,7 +63,11 @@ namespace WpfApplication1.Network
             IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 5555);
 
             // Create a TCP socket
-            Socket listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            if (listener == null)
+            {
+                listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            }
+            else Console.WriteLine("Only 1 client is allowed at once");
 
             // Bind the socket to the local endpoint and listen for incoming connections
 
@@ -87,6 +100,7 @@ namespace WpfApplication1.Network
 
         }
 
+        // TODO - I NEED TO LOCK IT FOR 1 CLIENT ONLY
         public static void AcceptCallback(IAsyncResult ar)
         {
             // Signal the main thread to continue.
@@ -96,14 +110,14 @@ namespace WpfApplication1.Network
             Socket listener = (Socket)ar.AsyncState;
             Socket handler = null;
 
-     
+
 
             try
             {
                 handler = listener.EndAccept(ar);
                 if (handler.Connected)
                 {
-                    mainW.UpdateSocketLblInfo("Connected");
+                    mainW.UpdateSocketLblInfo("connected");
 
                 }
             }
@@ -133,61 +147,72 @@ namespace WpfApplication1.Network
             try
             {
                 bytesRead = handler.EndReceive(ar);
-                Console.WriteLine(Encoding.ASCII.GetString(
-                        state.buffer, 0, bytesRead));
+                string getStringMessage = Encoding.ASCII.GetString(
+              state.buffer, 0, bytesRead).ToString();
+
+
+                switch (getStringMessage)
+                {
+                    case "play\n": mainW.Dispatcher.BeginInvoke(new Action(() => MediaPlayer.Instance.Play())); Console.WriteLine("In Play case");
+                        Send(handler, "Playing!");
+                        break;
+                    case "stop": Send(handler, "Stopping!"); break;
+                    case "back": Send(handler, "back!"); break;
+                    case "forward": Send(handler, "forward!"); break;
+                    case "disconnect": handler.Close(); break;
+                    case "connect": handler.Close(); break;
+
+
+
+
+
+
+
+                }
 
                 mainW.UpdateSocketLblInfo(Encoding.ASCII.GetString(
-                        state.buffer, 0, bytesRead) + " Connected");
+                        state.buffer, 0, bytesRead) + "Connected");
             }
 
             catch (Exception e) { Console.WriteLine(e.ToString()); }
 
 
-            switch(Encoding.ASCII.GetString(
-                        state.buffer, 0, bytesRead))
+
+            try
             {
-                case "play": Send(handler, "Playing!"); break;
-                case "stop": Send(handler, "Stopping!"); break;
-                case "back": Send(handler, "back!"); break;
-                case "forward": Send(handler, "forward!"); break;
-                case "disconnect": handler.Close(); break;
-                case "connect": handler.Close(); break;
-
-
-                
-
-
+                handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+                   new AsyncCallback(ReadCallback), state);
             }
 
-            handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-               new AsyncCallback(ReadCallback), state);
+            catch (Exception ex) { Console.WriteLine(ex.ToString()); }
 
-            //if (bytesRead > 0)
-            //{
-            //     There  might be more data, so store the data received so far.
-            //    state.sb.Append(Encoding.ASCII.GetString(
-            //        state.buffer, 0, bytesRead));
 
-            //     Check for end-of-file tag. If it is not there, read 
-            //     more data.
-            //    content = state.sb.ToString();
-            //    if (content.IndexOf("<EOF>") > -1)
-            //    {
-            //        // All the data has been read from the 
-            //        // client. Display it on the console.
-            //        Console.WriteLine("Read {0} bytes from socket. \n Data : {1}",
-            //            content.Length, content);
-            //        // Echo the data back to the client.
-            //        Send(handler, content);
-            //    }
-            //    else
-            //    {
-            //        // Not all data received. Get more.
-            //        handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-            //        new AsyncCallback(ReadCallback), state);
-            //    }
+            if (bytesRead > 0)
+            {
+                //    There  might be more data, so store the data received so far.
+                state.sb.Append(Encoding.ASCII.GetString(
+                    state.buffer, 0, bytesRead));
 
-            //}
+                //Check for end-of-file tag. If it is not there, read 
+                //more data.
+                content = state.sb.ToString();
+                if (content.IndexOf("<EOF>") > -1)
+                {
+                    // All the data has been read from the 
+                    // client. Display it on the console.
+                    Console.WriteLine("Read {0} bytes from socket. \n Data : {1}",
+                        content.Length, content);
+                    // Echo the data back to the client.
+                    Send(handler, content);
+                }
+                else
+                {
+                    // Not all data received. Get more.
+                    handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+                    new AsyncCallback(ReadCallback), state);
+                }
+
+            }
         }
 
         private static void Send(Socket handler, String data)
@@ -197,7 +222,8 @@ namespace WpfApplication1.Network
 
             // Begin sending the data to the remote device.
             handler.BeginSend(byteData, 0, byteData.Length, 0,
-                new AsyncCallback(SendCallback), handler);
+                new AsyncCallback(SendCallback), handler);      
+
         }
 
         private static void SendCallback(IAsyncResult ar)
