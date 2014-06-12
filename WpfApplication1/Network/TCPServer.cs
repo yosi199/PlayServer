@@ -152,7 +152,7 @@ namespace PlayServer.Network
 
 
                 switch (getStringMessage)
-                {
+                { 
                     case "play\n": mainW.Dispatcher.BeginInvoke(new Action(() => MediaPlayerClass.Instance.Play()));
                         Send(handler, "Playing!");
                         break;
