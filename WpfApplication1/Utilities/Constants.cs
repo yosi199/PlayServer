@@ -8,6 +8,7 @@ namespace PlayServer.Utilities
 {
     static class Constants
     {
+        public const string title = "PlayServer v{0}";
         public const string Indexing_ProgressMSG = "Finished Indexing {0} files in {1} folder - Ready to play.";
     }
 }

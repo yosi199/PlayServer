@@ -9,7 +9,7 @@ using PlayServer.Files;
 using PlayServer.Utilities;
 using ServiceStack;
 
-namespace PlayServer
+namespace PlayServer.Files
 {
 
     public class FileManger
