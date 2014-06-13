@@ -88,6 +88,8 @@ namespace PlayServer.Files
         private void getMusicFromPath(DirectoryInfo di)
         {
             FullDirList(di, "*.mp3");
+            // Once previous method return, signal that job done
+            // and progress can continue
             mCountDown.Signal();
 
 

@@ -19,6 +19,7 @@ using PlayServer.Network;
 using PlayServer.Player;
 using PlayServer.Files;
 using PlayServer.Utilities;
+using PlayServer.Players;
 
 namespace PlayServer
 {
@@ -30,7 +31,7 @@ namespace PlayServer
 
         private FileManger fm;
         private AsyncSocketListener server;
-        private LocalMediaPlayerClass player;
+        private MainPlayer player;
 
 
         public PlayerUI()
@@ -48,7 +49,8 @@ namespace PlayServer
             t.Start();
 
             // get the player instance
-            player = LocalMediaPlayerClass.Instance;
+            player = MainPlayer.Instance;
+            player.setPlayer(LocalMediaPlayerClass.Instance);
 
             // Get auto incremented version number and display at title
             string version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
@@ -78,6 +80,7 @@ namespace PlayServer
                 pb.IsIndeterminate = true;
                 pb.IsEnabled = true;
                 loadBTN.IsEnabled = false;
+                pbLabel.Content = "Loading...";
 
             }
         }
@@ -112,6 +115,10 @@ namespace PlayServer
 
         }
 
+        /// <summary>
+        /// Updates communication label 
+        /// </summary>
+        /// <param name="message">the message to display</param>
         public void UpdateSocketLblInfo(string message)
         {
             Dispatcher.Invoke(

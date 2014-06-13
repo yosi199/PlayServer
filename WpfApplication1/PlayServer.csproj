@@ -79,6 +79,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Files\Song.cs" />
+    <Compile Include="Players\MainPlayer.cs" />
     <Compile Include="Utilities\Constants.cs" />
     <Page Include="PlayerUI.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -96,8 +97,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Network\TCPServer.cs" />
-    <Compile Include="Player\LocalPlayer.cs" />
-    <Compile Include="Player\IPlayCommands.cs" />
+    <Compile Include="Players\LocalPlayer.cs" />
+    <Compile Include="Players\IPlayCommands.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

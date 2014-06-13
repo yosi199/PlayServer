@@ -12,7 +12,7 @@ using PlayServer.Files;
 namespace PlayServer.Player
 {
     /// <summary>
-    ///  Controls media playback logic
+    ///  Controls local files, media playback logic
     /// </summary>
     class LocalMediaPlayerClass : IPlayCommands
     {
@@ -44,11 +44,12 @@ namespace PlayServer.Player
             }
         }
 
-        private void initPlayer()
+
+
+        public void Play()
         {
             try
             {
-                // TODO - MUST HAVE CONDITION OBJECT LOCKING TO MAKE SURE LIST ISN'T EMPTY
 
                 lock (_locker)
                 {
@@ -70,33 +71,48 @@ namespace PlayServer.Player
 
             catch (Exception ex)
             {
-                Console.WriteLine(ex.TargetSite.ToString());
+                Console.WriteLine(ex.Message.ToString());
             }
 
             finally { }
-        }
-
-
-
-        public void Play()
-        {
-            initPlayer();
 
         }
 
         public void Stop()
         {
-            throw new NotImplementedException();
+            mp.Stop();
         }
 
         public void Rewind()
         {
-            throw new NotImplementedException();
+            if (_currentPosition > 0)
+            {
+                // Get previous file path from Json
+                jsonStringFile = instance.FilesInfoList[--_currentPosition].ToString();
+                Song currentSong = ServiceStack.Text.JsonSerializer.DeserializeFromString<Song>(jsonStringFile);
+
+                // Start playing
+                Uri track = new Uri(currentSong.pathInfo);
+                mp.Open(track);
+                mp.Play();
+
+            }
+            
         }
 
         public void Forward()
         {
-            throw new NotImplementedException();
+            if (_currentPosition < instance.FilesInfoList.Count())
+            {
+                // Get next file path from Json
+                jsonStringFile = instance.FilesInfoList[++_currentPosition].ToString();
+                Song currentSong = ServiceStack.Text.JsonSerializer.DeserializeFromString<Song>(jsonStringFile);
+
+                // Start playing
+                Uri track = new Uri(currentSong.pathInfo);
+                mp.Open(track);
+                mp.Play();
+            }
         }
     }
 }
