@@ -8,6 +8,7 @@ using System.IO;
 using System.Windows.Media;
 using ServiceStack;
 using PlayServer.Files;
+using PlayServer.Network;
 
 namespace PlayServer.Player
 {
@@ -46,8 +47,10 @@ namespace PlayServer.Player
 
 
 
-        public void Play()
+        public string Play()
         {
+            string returnValue = string.Empty;
+
             try
             {
 
@@ -57,12 +60,15 @@ namespace PlayServer.Player
                     {
                         // Get file path from Json
                         jsonStringFile = instance.FilesInfoList[_currentPosition].ToString();
+                        returnValue = jsonStringFile;
                         Song currentSong = ServiceStack.Text.JsonSerializer.DeserializeFromString<Song>(jsonStringFile);
 
                         // Start playing
                         Uri track = new Uri(currentSong.pathInfo);
                         mp.Open(track);
                         mp.Play();
+
+                      
                     }
                 }
 
@@ -75,6 +81,8 @@ namespace PlayServer.Player
             }
 
             finally { }
+
+            return returnValue; 
 
         }
 

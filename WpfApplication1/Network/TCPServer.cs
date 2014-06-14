@@ -8,43 +8,35 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using PlayServer.Player;
+using PlayServer.Players;
 
 namespace PlayServer.Network
 {
+    // State object for reading client data asynchronously
     public class StateObject
     {
-
-        //Client Socket
+        // Client  socket.
         public Socket workSocket = null;
-        // Size of  recieved buffer
+        // Size of receive buffer.
         public const int BufferSize = 1024;
-        // Recieve buffer
+        // Receive buffer.
         public byte[] buffer = new byte[BufferSize];
-        // Recieved data string 
+        // Received data string.
         public StringBuilder sb = new StringBuilder();
-
     }
 
-
-    public class AsyncSocketListener
+    public class AsynchronousSocketListener
     {
-
-
-
-        private static Socket listener;
-
         // Thread signal.
         public static ManualResetEvent allDone = new ManualResetEvent(false);
-
         private static PlayerUI mainW;
-        private static Player.LocalMediaPlayerClass player = Player.LocalMediaPlayerClass.Instance;
+        private static MainPlayer player = MainPlayer.Instance;
+        public static CountdownEvent freeToSend;
 
-
-
-        public AsyncSocketListener()
+        public AsynchronousSocketListener()
         {
+           freeToSend = new CountdownEvent(1);
             StartListening();
-
         }
 
         public static void registerUI(PlayerUI main)
@@ -54,23 +46,21 @@ namespace PlayServer.Network
 
         public static void StartListening()
         {
-            // Data buffer for incoming data
+            // Data buffer for incoming data.
             byte[] bytes = new Byte[1024];
 
-            // Establish the local endpoint for the socket
+            // Establish the local endpoint for the socket.
+            // The DNS name of the computer
+            // running the listener is "host.contoso.com".
             IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
             IPAddress ipAddress = ipHostInfo.AddressList[0];
             IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 5555);
 
-            // Create a TCP socket
-            if (listener == null)
-            {
-                listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            }
-            else Console.WriteLine("Only 1 client is allowed at once");
+            // Create a TCP/IP socket.
+            Socket listener = new Socket(AddressFamily.InterNetwork,
+                SocketType.Stream, ProtocolType.Tcp);
 
-            // Bind the socket to the local endpoint and listen for incoming connections
-
+            // Bind the socket to the local endpoint and listen for incoming connections.
             try
             {
                 listener.Bind(localEndPoint);
@@ -78,29 +68,30 @@ namespace PlayServer.Network
 
                 while (true)
                 {
-                    // set the event to nonsignaled state
+                    // Set the event to nonsignaled state.
                     allDone.Reset();
 
-                    // Start an async socket to listen for connections
-                    mainW.UpdateSocketLblInfo("LIstening");
-                    listener.BeginAccept(new AsyncCallback(AcceptCallback), listener);
+                    // Start an asynchronous socket to listen for connections.
+                    Console.WriteLine("Waiting for a connection...");
+                    listener.BeginAccept(
+                        new AsyncCallback(AcceptCallback),
+                        listener);
 
-
-
+                    // Wait until a connection is made before continuing.
                     allDone.WaitOne();
                 }
-            }
 
+            }
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
-                StartListening();
             }
 
+            Console.WriteLine("\nPress ENTER to continue...");
+            Console.Read();
 
         }
 
-        // TODO - I NEED TO LOCK IT FOR 1 CLIENT ONLY
         public static void AcceptCallback(IAsyncResult ar)
         {
             // Signal the main thread to continue.
@@ -108,21 +99,7 @@ namespace PlayServer.Network
 
             // Get the socket that handles the client request.
             Socket listener = (Socket)ar.AsyncState;
-            Socket handler = null;
-
-
-
-            try
-            {
-                handler = listener.EndAccept(ar);
-                if (handler.Connected)
-                {
-                    mainW.UpdateSocketLblInfo("connected");
-
-                }
-            }
-
-            catch (Exception e) { Console.WriteLine(e.ToString()); }
+            Socket handler = listener.EndAccept(ar);
 
             // Create the state object.
             StateObject state = new StateObject();
@@ -139,59 +116,41 @@ namespace PlayServer.Network
             // from the asynchronous state object.
             StateObject state = (StateObject)ar.AsyncState;
             Socket handler = state.workSocket;
-            int bytesRead = 0;
-
-
 
             // Read data from the client socket. 
-            try
+            int bytesRead = handler.EndReceive(ar);
+
+            string getStringMessage = Encoding.ASCII.GetString(
+             state.buffer, 0, bytesRead).ToString();
+
+
+            
+            string songJson = string.Empty;
+            switch (getStringMessage)
             {
-                bytesRead = handler.EndReceive(ar);
-                string getStringMessage = Encoding.ASCII.GetString(
-              state.buffer, 0, bytesRead).ToString();
-
-
-                switch (getStringMessage)
-                { 
-                    case "play\n": mainW.Dispatcher.BeginInvoke(new Action(() => LocalMediaPlayerClass.Instance.Play()));
-                        Send(handler, "Playing!");
-                        break;
-                    case "stop": mainW.Dispatcher.BeginInvoke(new Action(() => LocalMediaPlayerClass.Instance.Stop()));
-                        Send(handler, "Stopped!"); break;
-                    case "back": Send(handler, "back!"); break;
-                    case "forward": Send(handler, "forward!"); break;
-                    case "disconnect": handler.Close(); break;
-                    case "connect": handler.Close(); break;
-
-
-
-                }
-
-                mainW.UpdateSocketLblInfo(Encoding.ASCII.GetString(
-                        state.buffer, 0, bytesRead) + "Connected");
+                case "play\n": // get JSON string of the currently playing song and send back to client
+                    mainW.Dispatcher.BeginInvoke(new Action(() => songJson = player.Play()));
+                    freeToSend.Wait();
+                    Send(handler, songJson);
+                    break;
+                case "stop": mainW.Dispatcher.BeginInvoke(new Action(() => player.Stop()));
+                    Send(handler, "Stopped!"); break;
+                case "back": Send(handler, "back!"); break;
+                case "forward": Send(handler, "forward!"); break;
+                case "disconnect": handler.Close(); break;
+                case "connect": break;
             }
 
-            catch (Exception e) { Console.WriteLine(e.ToString()); }
-
-
-
-            try
-            {
-                handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                   new AsyncCallback(ReadCallback), state);
-            }
-
-            catch (Exception ex) { Console.WriteLine(ex.ToString()); }
 
 
             if (bytesRead > 0)
             {
-                //    There  might be more data, so store the data received so far.
+                // There  might be more data, so store the data received so far.
                 state.sb.Append(Encoding.ASCII.GetString(
                     state.buffer, 0, bytesRead));
 
-                //Check for end-of-file tag. If it is not there, read 
-                //more data.
+                // Check for end-of-file tag. If it is not there, read 
+                // more data.
                 content = state.sb.ToString();
                 if (content.IndexOf("<EOF>") > -1)
                 {
@@ -204,14 +163,14 @@ namespace PlayServer.Network
                 }
                 else
                 {
-
                     // Not all data received. Get more.
                     handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
                     new AsyncCallback(ReadCallback), state);
                 }
-
             }
+
         }
+
 
         private static void Send(Socket handler, String data)
         {
@@ -220,8 +179,7 @@ namespace PlayServer.Network
 
             // Begin sending the data to the remote device.
             handler.BeginSend(byteData, 0, byteData.Length, 0,
-                new AsyncCallback(SendCallback), handler);      
-
+                new AsyncCallback(SendCallback), handler);
         }
 
         private static void SendCallback(IAsyncResult ar)
@@ -236,7 +194,7 @@ namespace PlayServer.Network
                 Console.WriteLine("Sent {0} bytes to client.", bytesSent);
 
                 handler.Shutdown(SocketShutdown.Both);
-                handler.Close();
+                //handler.Close();
 
             }
             catch (Exception e)
@@ -244,7 +202,6 @@ namespace PlayServer.Network
                 Console.WriteLine(e.ToString());
             }
         }
-
     }
-
 }
+

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PlayServer.Network;
 
 namespace PlayServer.Players
 {
@@ -38,9 +39,12 @@ namespace PlayServer.Players
         }
 
 
-        public void Play()
+        public string Play()
         {
-            playerChoosen.Play();
+            string returnValue = playerChoosen.Play();
+            AsynchronousSocketListener.freeToSend.Signal();
+
+            return returnValue;
         }
 
         public void Stop()

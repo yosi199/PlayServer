@@ -8,7 +8,7 @@ namespace PlayServer.Player
 {
     interface IPlayCommands
     {
-         void Play();
+         string Play();
          void Stop();
          void Rewind();
          void Forward();

@@ -30,7 +30,7 @@ namespace PlayServer
     {
 
         private FileManger fm;
-        private AsyncSocketListener server;
+        private AsynchronousSocketListener server;
         private MainPlayer player;
 
 
@@ -44,8 +44,8 @@ namespace PlayServer
             fm.registerUI(this);
 
             // Start the server and register the UI
-            Task t = new Task(() => server = new AsyncSocketListener());
-            AsyncSocketListener.registerUI(this);
+            Task t = new Task(() => server = new AsynchronousSocketListener());
+            AsynchronousSocketListener.registerUI(this);
             t.Start();
 
             // get the player instance
@@ -118,7 +118,7 @@ namespace PlayServer
         /// <summary>
         /// Updates communication label 
         /// </summary>
-        /// <param name="message">the message to display</param>
+        /// <param name="message"></param>
         public void UpdateSocketLblInfo(string message)
         {
             Dispatcher.Invoke(
