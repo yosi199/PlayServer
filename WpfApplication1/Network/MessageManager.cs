@@ -41,7 +41,6 @@ namespace PlayServer.Network
             mainW = main;
         }
 
-
         public string figureMessageType(string message)
         {
             string returnedValue = string.Empty;
@@ -59,7 +58,6 @@ namespace PlayServer.Network
 
                 }
             }
-
 
             return returnedValue;
         }
