@@ -126,6 +126,19 @@ namespace PlayServer.Player
                         mp.Play();
 
                     }
+
+                    else if (_currentPosition == 0) {
+                        // Replay first song
+                        jsonStringFile = instance.FilesInfoList[_currentPosition].ToString();
+                        returnValue = jsonStringFile;
+                        Song currentSong = ServiceStack.Text.JsonSerializer.DeserializeFromString<Song>(jsonStringFile);
+
+                        // Start playing
+                        Uri track = new Uri(currentSong.pathInfo);
+                        mp.Open(track);
+                        mp.Play();
+                    
+                    }
                 }
             }
             catch (Exception ex)

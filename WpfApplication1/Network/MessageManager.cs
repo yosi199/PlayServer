@@ -40,6 +40,8 @@ namespace PlayServer.Network
         {
             mainW = main;
         }
+
+
         public string figureMessageType(string message)
         {
             string returnedValue = string.Empty;
@@ -48,14 +50,14 @@ namespace PlayServer.Network
                 var messageObj = JsonObject.Parse(message);
                 string type = messageObj.Get("MessageType");
 
-
-
                 switch (type)
                 {
                     case "Play": mainW.Dispatcher.Invoke(new Action(() => returnedValue = player.Play())); break;
-                    case "Stop": break;
-                }
+                    case "Stop": mainW.Dispatcher.Invoke(new Action(() => player.Stop())); break;
+                    case "Rewind": mainW.Dispatcher.Invoke(new Action(() => returnedValue = player.Rewind())); break;
+                    case "Forward": mainW.Dispatcher.Invoke(new Action(() => returnedValue = player.Forward())); break;
 
+                }
             }
 
 
