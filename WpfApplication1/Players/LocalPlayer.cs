@@ -9,6 +9,7 @@ using System.Windows.Media;
 using ServiceStack;
 using PlayServer.Files;
 using PlayServer.Network;
+using PlayServer.Players;
 
 namespace PlayServer.Player
 {
@@ -80,7 +81,10 @@ namespace PlayServer.Player
                 Console.WriteLine(ex.Message.ToString());
             }
 
-            finally { }
+            finally {
+                MainPlayer.mWaitForParsing.Signal();
+                MainPlayer.mWaitForParsing = new System.Threading.CountdownEvent(1);
+            }
 
             return returnValue; 
 

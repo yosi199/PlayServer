@@ -30,7 +30,7 @@ namespace PlayServer
     {
 
         private FileManger fm;
-        private AsynchronousSocketListener server;
+        private SynchronousSocketListener server;
         private MainPlayer player;
 
 
@@ -44,9 +44,10 @@ namespace PlayServer
             fm.registerUI(this);
 
             // Start the server and register the UI
-            Task t = new Task(() => server = new AsynchronousSocketListener());
-            AsynchronousSocketListener.registerUI(this);
+            Task t = new Task(() => server = new SynchronousSocketListener());
             t.Start();
+            SynchronousSocketListener.registerUI(this);
+
 
             // get the player instance
             player = MainPlayer.Instance;

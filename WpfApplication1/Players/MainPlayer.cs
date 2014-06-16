@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PlayServer.Network;
+using System.Threading;
 
 namespace PlayServer.Players
 {
@@ -18,8 +19,10 @@ namespace PlayServer.Players
         private IPlayCommands playerChoosen;
         private static MainPlayer mainPlayerInstance;
 
+        public static CountdownEvent mWaitForParsing;
 
-        private MainPlayer() { }
+
+        private MainPlayer() { mWaitForParsing = new CountdownEvent(1); }
         public static MainPlayer Instance
         {
             get
@@ -42,7 +45,8 @@ namespace PlayServer.Players
         public string Play()
         {
             string returnValue = playerChoosen.Play();
-            AsynchronousSocketListener.freeToSend.Signal();
+
+
 
             return returnValue;
         }

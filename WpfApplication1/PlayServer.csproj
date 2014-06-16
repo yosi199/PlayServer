@@ -79,6 +79,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Files\Song.cs" />
+    <Compile Include="MessageTypes\PlayMessageType.cs" />
+    <Compile Include="Network\MessageManager.cs" />
     <Compile Include="Players\MainPlayer.cs" />
     <Compile Include="Utilities\Constants.cs" />
     <Page Include="PlayerUI.xaml">

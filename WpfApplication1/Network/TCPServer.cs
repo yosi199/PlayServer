@@ -25,33 +25,27 @@ namespace PlayServer.Network
         public StringBuilder sb = new StringBuilder();
     }
 
-    public class AsynchronousSocketListener
+    public class SynchronousSocketListener
     {
-        // Thread signal.
-        public static ManualResetEvent allDone = new ManualResetEvent(false);
-        private static PlayerUI mainW;
-        private static MainPlayer player = MainPlayer.Instance;
-        public static CountdownEvent freeToSend;
+        // Incoming data from the client.
+        public static string data = null;
+        private static PlayerUI mainW = null;
 
-        public AsynchronousSocketListener()
-        {
-           freeToSend = new CountdownEvent(1);
-            StartListening();
-        }
-
-        public static void registerUI(PlayerUI main)
-        {
-            mainW = main;
-        }
+        public SynchronousSocketListener() { StartListening();  }
 
         public static void StartListening()
         {
             // Data buffer for incoming data.
             byte[] bytes = new Byte[1024];
 
+            MessageManager messageHandler = MessageManager.Instance;
+            messageHandler.registerUI(mainW);
+
+            string messageReturned = string.Empty;
+
             // Establish the local endpoint for the socket.
-            // The DNS name of the computer
-            // running the listener is "host.contoso.com".
+            // Dns.GetHostName returns the name of the 
+            // host running the application.
             IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
             IPAddress ipAddress = ipHostInfo.AddressList[0];
             IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 5555);
@@ -60,25 +54,44 @@ namespace PlayServer.Network
             Socket listener = new Socket(AddressFamily.InterNetwork,
                 SocketType.Stream, ProtocolType.Tcp);
 
-            // Bind the socket to the local endpoint and listen for incoming connections.
+            // Bind the socket to the local endpoint and 
+            // listen for incoming connections.
             try
             {
                 listener.Bind(localEndPoint);
-                listener.Listen(100);
+                listener.Listen(10);
 
+                // Start listening for connections.
                 while (true)
                 {
-                    // Set the event to nonsignaled state.
-                    allDone.Reset();
-
-                    // Start an asynchronous socket to listen for connections.
                     Console.WriteLine("Waiting for a connection...");
-                    listener.BeginAccept(
-                        new AsyncCallback(AcceptCallback),
-                        listener);
+                    // Program is suspended while waiting for an incoming connection.
+                    Socket handler = listener.Accept();
+                    data = null;
 
-                    // Wait until a connection is made before continuing.
-                    allDone.WaitOne();
+                    // An incoming connection needs to be processed.
+                    while (true)
+                    {
+                        bytes = new byte[1024];
+                        int bytesRec = handler.Receive(bytes);
+                        data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
+                        if (data.IndexOf("<EOF>") > -1)
+                        {
+                            data = data.Replace("<EOF>", "");
+                            messageReturned = messageHandler.figureMessageType(data);                         
+                            break;
+                        }
+                    }
+
+                    // Show the data on the console.
+                    Console.WriteLine("Text received : {0}", data);
+
+                    // Echo the data back to the client.
+                    byte[] msg = Encoding.ASCII.GetBytes(messageReturned);
+
+                    handler.Send(msg);
+                    handler.Shutdown(SocketShutdown.Both);
+                    handler.Close();
                 }
 
             }
@@ -92,116 +105,9 @@ namespace PlayServer.Network
 
         }
 
-        public static void AcceptCallback(IAsyncResult ar)
+        public static void registerUI(PlayerUI mainUI)
         {
-            // Signal the main thread to continue.
-            allDone.Set();
-
-            // Get the socket that handles the client request.
-            Socket listener = (Socket)ar.AsyncState;
-            Socket handler = listener.EndAccept(ar);
-
-            // Create the state object.
-            StateObject state = new StateObject();
-            state.workSocket = handler;
-            handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                new AsyncCallback(ReadCallback), state);
-        }
-
-        public static void ReadCallback(IAsyncResult ar)
-        {
-            String content = String.Empty;
-
-            // Retrieve the state object and the handler socket
-            // from the asynchronous state object.
-            StateObject state = (StateObject)ar.AsyncState;
-            Socket handler = state.workSocket;
-
-            // Read data from the client socket. 
-            int bytesRead = handler.EndReceive(ar);
-
-            string getStringMessage = Encoding.ASCII.GetString(
-             state.buffer, 0, bytesRead).ToString();
-
-
-            
-            string songJson = string.Empty;
-            switch (getStringMessage)
-            {
-                case "play\n": // get JSON string of the currently playing song and send back to client
-                    mainW.Dispatcher.BeginInvoke(new Action(() => songJson = player.Play()));
-                    freeToSend.Wait();
-                    Send(handler, songJson);
-                    break;
-                case "stop": mainW.Dispatcher.BeginInvoke(new Action(() => player.Stop()));
-                    Send(handler, "Stopped!"); break;
-                case "back": Send(handler, "back!"); break;
-                case "forward": Send(handler, "forward!"); break;
-                case "disconnect": handler.Close(); break;
-                case "connect": break;
-            }
-
-
-
-            if (bytesRead > 0)
-            {
-                // There  might be more data, so store the data received so far.
-                state.sb.Append(Encoding.ASCII.GetString(
-                    state.buffer, 0, bytesRead));
-
-                // Check for end-of-file tag. If it is not there, read 
-                // more data.
-                content = state.sb.ToString();
-                if (content.IndexOf("<EOF>") > -1)
-                {
-                    // All the data has been read from the 
-                    // client. Display it on the console.
-                    Console.WriteLine("Read {0} bytes from socket. \n Data : {1}",
-                        content.Length, content);
-                    // Echo the data back to the client.
-                    Send(handler, content);
-                }
-                else
-                {
-                    // Not all data received. Get more.
-                    handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                    new AsyncCallback(ReadCallback), state);
-                }
-            }
-
-        }
-
-
-        private static void Send(Socket handler, String data)
-        {
-            // Convert the string data to byte data using ASCII encoding.
-            byte[] byteData = Encoding.ASCII.GetBytes(data);
-
-            // Begin sending the data to the remote device.
-            handler.BeginSend(byteData, 0, byteData.Length, 0,
-                new AsyncCallback(SendCallback), handler);
-        }
-
-        private static void SendCallback(IAsyncResult ar)
-        {
-            try
-            {
-                // Retrieve the socket from the state object.
-                Socket handler = (Socket)ar.AsyncState;
-
-                // Complete sending the data to the remote device.
-                int bytesSent = handler.EndSend(ar);
-                Console.WriteLine("Sent {0} bytes to client.", bytesSent);
-
-                handler.Shutdown(SocketShutdown.Both);
-                //handler.Close();
-
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
+            mainW = mainUI;
         }
     }
 }
-
