@@ -29,7 +29,6 @@ namespace PlayServer.Player
 
         private static System.Windows.Media.MediaPlayer mp = new System.Windows.Media.MediaPlayer();
 
-
         private LocalMediaPlayerClass() { }
 
         public static LocalMediaPlayerClass Instance
@@ -45,8 +44,6 @@ namespace PlayServer.Player
 
             }
         }
-
-
 
         public string Play()
         {
@@ -69,7 +66,7 @@ namespace PlayServer.Player
                         mp.Open(track);
                         mp.Play();
 
-                      
+
                     }
                 }
 
@@ -81,50 +78,108 @@ namespace PlayServer.Player
                 Console.WriteLine(ex.Message.ToString());
             }
 
-            finally {
+            finally
+            {
                 MainPlayer.mWaitForParsing.Signal();
                 MainPlayer.mWaitForParsing = new System.Threading.CountdownEvent(1);
             }
 
-            return returnValue; 
+            return returnValue;
 
         }
 
-        public void Stop()
+        public bool Stop()
         {
-            mp.Stop();
-        }
+            bool succeed;
 
-        public void Rewind()
-        {
-            if (_currentPosition > 0)
+            try
             {
-                // Get previous file path from Json
-                jsonStringFile = instance.FilesInfoList[--_currentPosition].ToString();
-                Song currentSong = ServiceStack.Text.JsonSerializer.DeserializeFromString<Song>(jsonStringFile);
-
-                // Start playing
-                Uri track = new Uri(currentSong.pathInfo);
-                mp.Open(track);
-                mp.Play();
+                mp.Stop();
+                succeed = true;
 
             }
-            
+
+            catch (Exception e) { succeed = false; }
+
+            return succeed;
+
         }
 
-        public void Forward()
+        public string Rewind()
         {
-            if (_currentPosition < instance.FilesInfoList.Count())
-            {
-                // Get next file path from Json
-                jsonStringFile = instance.FilesInfoList[++_currentPosition].ToString();
-                Song currentSong = ServiceStack.Text.JsonSerializer.DeserializeFromString<Song>(jsonStringFile);
+            string returnValue = string.Empty;
 
-                // Start playing
-                Uri track = new Uri(currentSong.pathInfo);
-                mp.Open(track);
-                mp.Play();
+            try
+            {
+                lock (_locker)
+                {
+                    if (_currentPosition > 0)
+                    {
+                        // Get previous file path from Json
+                        jsonStringFile = instance.FilesInfoList[--_currentPosition].ToString();
+                        returnValue = jsonStringFile;
+                        Song currentSong = ServiceStack.Text.JsonSerializer.DeserializeFromString<Song>(jsonStringFile);
+
+                        // Start playing
+                        Uri track = new Uri(currentSong.pathInfo);
+                        mp.Open(track);
+                        mp.Play();
+
+                    }
+                }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message.ToString());
+            }
+
+            finally
+            {
+                MainPlayer.mWaitForParsing.Signal();
+                MainPlayer.mWaitForParsing = new System.Threading.CountdownEvent(1);
+
+            }
+
+            return returnValue;
+
+        }
+
+        public string Forward()
+        {
+            string returnValue = string.Empty;
+
+            try
+            {
+                lock (_locker)
+                {
+
+                    if (_currentPosition < instance.FilesInfoList.Count())
+                    {
+                        // Get next file path from Json
+                        jsonStringFile = instance.FilesInfoList[++_currentPosition].ToString();
+                        Song currentSong = ServiceStack.Text.JsonSerializer.DeserializeFromString<Song>(jsonStringFile);
+
+                        // Start playing
+                        Uri track = new Uri(currentSong.pathInfo);
+                        mp.Open(track);
+                        mp.Play();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message.ToString());
+            }
+
+            finally
+            {
+                MainPlayer.mWaitForParsing.Signal();
+                MainPlayer.mWaitForParsing = new System.Threading.CountdownEvent(1);
+
+            }
+
+            return returnValue;
+
         }
     }
 }

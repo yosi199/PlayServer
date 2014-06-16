@@ -21,8 +21,8 @@ namespace PlayServer.Players
 
         public static CountdownEvent mWaitForParsing;
 
-
         private MainPlayer() { mWaitForParsing = new CountdownEvent(1); }
+
         public static MainPlayer Instance
         {
             get
@@ -41,29 +41,29 @@ namespace PlayServer.Players
             playerChoosen = player;
         }
 
-
         public string Play()
         {
             string returnValue = playerChoosen.Play();
-
-
-
             return returnValue;
         }
 
-        public void Stop()
+        public bool Stop()
         {
-            playerChoosen.Stop();
+            bool success = playerChoosen.Stop();
+
+            return success;
         }
 
-        public void Rewind()
+        public string Rewind()
         {
-            playerChoosen.Rewind();
+            string returnValue = playerChoosen.Rewind();
+            return returnValue;
         }
 
-        public void Forward()
+        public string Forward()
         {
-            playerChoosen.Forward();
+            string returnValue = playerChoosen.Forward();
+            return returnValue;
         }
     }
 }
