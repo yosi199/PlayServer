@@ -170,6 +170,8 @@ namespace PlayServer.Player
                     {
                         // Get next file path from Json
                         jsonStringFile = instance.FilesInfoList[++_currentPosition].ToString();
+                        returnValue = jsonStringFile;
+
                         Song currentSong = ServiceStack.Text.JsonSerializer.DeserializeFromString<Song>(jsonStringFile);
 
                         // Start playing

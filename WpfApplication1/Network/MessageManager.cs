@@ -53,7 +53,7 @@ namespace PlayServer.Network
                 {
                     case "Play": mainW.Dispatcher.Invoke(new Action(() => returnedValue = player.Play())); break;
                     case "Stop": mainW.Dispatcher.Invoke(new Action(() => player.Stop())); break;
-                    case "Rewind": mainW.Dispatcher.Invoke(new Action(() => returnedValue = player.Rewind())); break;
+                    case "Backward": mainW.Dispatcher.Invoke(new Action(() => returnedValue = player.Rewind())); break;
                     case "Forward": mainW.Dispatcher.Invoke(new Action(() => returnedValue = player.Forward())); break;
 
                 }
