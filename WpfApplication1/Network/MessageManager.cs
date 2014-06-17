@@ -55,6 +55,7 @@ namespace PlayServer.Network
                     case "Stop": mainW.Dispatcher.Invoke(new Action(() => player.Stop())); break;
                     case "Backward": mainW.Dispatcher.Invoke(new Action(() => returnedValue = player.Rewind())); break;
                     case "Forward": mainW.Dispatcher.Invoke(new Action(() => returnedValue = player.Forward())); break;
+                    case "DeviceInfo":mainW.Dispatcher.Invoke(new Action(()=> mainW.SocketInfo.Content=messageObj.Get("deviceName"))); break;
 
                 }
             }
