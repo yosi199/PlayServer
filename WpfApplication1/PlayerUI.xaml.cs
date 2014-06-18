@@ -46,16 +46,15 @@ namespace PlayServer
             // Start the server and register the UI
             Task t = new Task(() => server = new SynchronousSocketListener());
             t.Start();
-            SynchronousSocketListener.registerUI(this);
 
+            SynchronousSocketListener.registerUI(this);
 
             // get the player instance
             player = MainPlayer.Instance;
             player.setPlayer(LocalMediaPlayerClass.Instance);
 
-            // Get auto incremented version number and display at title
-            string version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            Title = String.Format(Constants.title, version);
+            // Set app version in title
+            setVersion();
 
         }
 
@@ -94,6 +93,12 @@ namespace PlayServer
         private void PlayBtn(object sender, RoutedEventArgs e)
         {
             player.Play();
+        }
+
+        private void setVersion() {
+            // Get auto incremented version number and display at title
+            string version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            Title = String.Format(Constants.title, version);
         }
 
         public void UpdateUIFromNewThread(String message)

@@ -19,9 +19,11 @@ namespace PlayServer.Player
     class LocalMediaPlayerClass : IPlayCommands
     {
 
+        // Singeltons instances;
         private static FileManger instance = FileManger.Instance;
         private static LocalMediaPlayerClass playerInstance;
 
+        // Lock Object
         private object _locker = new object();
 
         private int _currentPosition = 0;

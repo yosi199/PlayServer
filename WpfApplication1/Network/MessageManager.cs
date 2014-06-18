@@ -8,6 +8,10 @@ using PlayServer.Players;
 
 namespace PlayServer.Network
 {
+    /// <summary>
+    /// A Controller class that reads the message and perform 
+    /// an action based on it's type
+    /// </summary>
     class MessageManager
     {
 
@@ -41,6 +45,11 @@ namespace PlayServer.Network
             mainW = main;
         }
 
+        /// <summary>
+        /// Performs actions based on message type
+        /// </summary>
+        /// <param name="message">A JSON string that encapsulate the command</param>
+        /// <returns>passes a string back to the server</returns>
         public string figureMessageType(string message)
         {
             string returnedValue = string.Empty;
