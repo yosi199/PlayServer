@@ -60,11 +60,11 @@ namespace PlayServer.Network
 
                 switch (type)
                 {
-                    case "Play": mainW.Dispatcher.Invoke(new Action(() => returnedValue = player.Play())); break;
-                    case "Stop": mainW.Dispatcher.Invoke(new Action(() => player.Stop())); break;
-                    case "Backward": mainW.Dispatcher.Invoke(new Action(() => returnedValue = player.Rewind())); break;
-                    case "Forward": mainW.Dispatcher.Invoke(new Action(() => returnedValue = player.Forward())); break;
-                    case "DeviceInfo":mainW.Dispatcher.Invoke(new Action(()=> mainW.SocketInfo.Content=messageObj.Get("deviceName"))); break;
+                    case "Play": mainW.Dispatcher.Invoke(() => returnedValue = player.Play()); break;
+                    case "Stop": mainW.Dispatcher.Invoke(() => player.Stop()); break;
+                    case "Backward": mainW.Dispatcher.Invoke(() => returnedValue = player.Rewind()); break;
+                    case "Forward": mainW.Dispatcher.Invoke(() => returnedValue = player.Forward()); break;
+                    case "DeviceInfo":mainW.Dispatcher.Invoke(()=> mainW.SocketInfo.Content=messageObj.Get("deviceName")); break;
 
                 }
             }

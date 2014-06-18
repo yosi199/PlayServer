@@ -49,7 +49,6 @@ namespace PlayServer.Player
 
         public string Play()
         {
-            string returnValue = string.Empty;
 
             try
             {
@@ -59,8 +58,7 @@ namespace PlayServer.Player
                     if (instance.FilesInfoList.Count > 0)
                     {
                         // Get file path from Json
-                        jsonStringFile = instance.FilesInfoList[_currentPosition].ToString();
-                        returnValue = jsonStringFile;
+                        jsonStringFile = instance.FilesInfoList[_currentPosition];
                         Song currentSong = ServiceStack.Text.JsonSerializer.DeserializeFromString<Song>(jsonStringFile);
 
                         // Start playing
@@ -86,7 +84,7 @@ namespace PlayServer.Player
                 MainPlayer.mWaitForParsing = new System.Threading.CountdownEvent(1);
             }
 
-            return returnValue;
+            return jsonStringFile;
 
         }
 
@@ -109,7 +107,6 @@ namespace PlayServer.Player
 
         public string Rewind()
         {
-            string returnValue = string.Empty;
 
             try
             {
@@ -118,8 +115,8 @@ namespace PlayServer.Player
                     if (_currentPosition > 0)
                     {
                         // Get previous file path from Json
-                        jsonStringFile = instance.FilesInfoList[--_currentPosition].ToString();
-                        returnValue = jsonStringFile;
+                        jsonStringFile = instance.FilesInfoList[--_currentPosition];
+
                         Song currentSong = ServiceStack.Text.JsonSerializer.DeserializeFromString<Song>(jsonStringFile);
 
                         // Start playing
@@ -129,17 +126,18 @@ namespace PlayServer.Player
 
                     }
 
-                    else if (_currentPosition == 0) {
+                    else if (_currentPosition == 0)
+                    {
                         // Replay first song
                         jsonStringFile = instance.FilesInfoList[_currentPosition].ToString();
-                        returnValue = jsonStringFile;
+
                         Song currentSong = ServiceStack.Text.JsonSerializer.DeserializeFromString<Song>(jsonStringFile);
 
                         // Start playing
                         Uri track = new Uri(currentSong.pathInfo);
                         mp.Open(track);
                         mp.Play();
-                    
+
                     }
                 }
             }
@@ -155,13 +153,12 @@ namespace PlayServer.Player
 
             }
 
-            return returnValue;
+            return jsonStringFile;
 
         }
 
         public string Forward()
         {
-            string returnValue = string.Empty;
 
             try
             {
@@ -172,7 +169,6 @@ namespace PlayServer.Player
                     {
                         // Get next file path from Json
                         jsonStringFile = instance.FilesInfoList[++_currentPosition].ToString();
-                        returnValue = jsonStringFile;
 
                         Song currentSong = ServiceStack.Text.JsonSerializer.DeserializeFromString<Song>(jsonStringFile);
 
@@ -195,7 +191,7 @@ namespace PlayServer.Player
 
             }
 
-            return returnValue;
+            return jsonStringFile;
 
         }
     }
