@@ -15,12 +15,15 @@
 
 
         <Grid HorizontalAlignment="Left" Height="100" Margin="10,10,-1,0" VerticalAlignment="Top" Width="472" Grid.ColumnSpan="2">
-            <Button Content="Load Files" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="104" Click="loadDirBtn" Height="35" x:Name="loadBTN" Foreground="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}" Margin="1,0,367,65" Background="#FFFF4455" BorderBrush="{x:Null}" BorderThickness="8,1,1,1" Opacity="0.8"/>
+            <Button Content="Load Files" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="104" Click="LoadDirBtn" Height="35" x:Name="loadBTN" Foreground="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}" Margin="1,0,367,65" Background="#FFFF4455" BorderBrush="{x:Null}" BorderThickness="8,1,1,1" Opacity="0.8"/>
             <Button Content="Play" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="104" Click="PlayBtn" Height="35" x:Name="Play" Foreground="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}" Margin="109,0,259,65" Background="#FFFF4455" BorderBrush="{x:Null}" Opacity="0.8" Visibility="Hidden"/>
-            <Label Focusable="True" Content="Status" HorizontalAlignment="Left" Margin="0,0,0,-176" VerticalAlignment="Bottom" Name="pbLabel" FontSize="15" FontFamily="Helvetica Neue" Foreground="White" Width="472"/>
-            <Label Focusable="True" Content="ClientInfo" HorizontalAlignment="Left" VerticalAlignment="Bottom" Name="SocketInfo" FontSize="15" FontFamily="Helvetica Neue" Foreground="White" Width="472" Margin="0,0,0,20"/>
+            <Label Focusable="True" Content="Status" HorizontalAlignment="Left" Margin="0,0,0,-177" VerticalAlignment="Bottom" Name="pbLabel" FontSize="15" FontFamily="Helvetica Neue" Foreground="White" Width="472"/>
+
 
         </Grid>
+        <Canvas HorizontalAlignment="Left" Height="103" Margin="0,154,-1,0" VerticalAlignment="Top" Width="492" Background="White" Opacity="0.95" Panel.ZIndex="-1"/>
+        <Label Focusable="True" Content="" HorizontalAlignment="Left" Margin="10,0,0,63" VerticalAlignment="Bottom" Name="CurrPlayingLbl" FontSize="15" FontFamily="Helvetica Neue" Foreground="Black" Width="472" Background="{x:Null}" Height="45"/>
+        <Label Focusable="True" Content="Client Connected: None." HorizontalAlignment="Left" VerticalAlignment="Bottom" Name="SocketInfo" FontSize="15" FontFamily="Helvetica Neue" Foreground="Black" Width="472" Margin="9,0,0,128" Background="{x:Null}"/>
 
     </Grid>
 </Window>

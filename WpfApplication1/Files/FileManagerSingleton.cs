@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,11 +30,24 @@ namespace PlayServer.Files
         private CountdownEvent mCountDown;
 
         // public properties
-        public int filesCount { get { return fileCount; } }
-        public int foldersCount { get { return folderCount; } }
-        public List<string> FilesInfoList { get { return files; } }
+        public int filesCount
+        {
+            get { return fileCount; }
+        }
 
-        private FileManger() { }
+        public int foldersCount
+        {
+            get { return folderCount; }
+        }
+
+        public List<string> FilesInfoList
+        {
+            get { return files; }
+        }
+
+        private FileManger()
+        {
+        }
 
         public static FileManger Instance
         {
@@ -82,12 +97,15 @@ namespace PlayServer.Files
         private void UpdateUI(String message)
         {
             mCountDown.Wait();
-            mainW.UpdateUIFromNewThread(message);
+            mainW.UpdateUiFromNewThread(message);
         }
 
         private void getMusicFromPath(DirectoryInfo di)
         {
-            FullDirList(di, "*.mp3");
+           // FullDirList(di, "*.mp3");
+            GetFilesFromDir(di, "*.mp3");
+
+
             // Once previous method return, signal that job done
             // and progress can continue
             mCountDown.Signal();
@@ -102,6 +120,8 @@ namespace PlayServer.Files
             {
                 try
                 {
+
+
                     foreach (FileInfo f in dir.GetFiles(searchPattern))
                     {
                         string artist = string.Empty;
@@ -167,5 +187,55 @@ namespace PlayServer.Files
 
         }
 
+
+        private void GetFilesFromDir(DirectoryInfo dir, string searchPattern)
+        {
+
+            foreach (FileInfo f in dir.GetFiles(searchPattern, searchOption: SearchOption.AllDirectories))
+            {
+
+
+                // Get song information and create a new Json object
+                try
+                {
+                    int index = fileCount;
+                    string artist = string.Empty;
+                    string album;
+                    string title;
+                    string path;
+                    string songJSON;
+
+
+                    TagLib.File tagFile = TagLib.File.Create(f.FullName.ToString());
+
+                    if (tagFile.Tag.Performers.Count() > 0)
+                    {
+                        artist = tagFile.Tag.Performers[0];
+                    }
+
+                    album = tagFile.Tag.Album;
+                    title = tagFile.Tag.Title;
+                    path = f.FullName.ToString();
+            
+
+
+                    Song song = new Song(artist, album, title, path, index);
+                    songJSON = song.ToJson<Song>();
+
+                    files.Add(songJSON);
+                    fileCount++;
+
+                    mainW.UpdateUiFromNewThread(artist + "- " + title);
+                }
+
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message.ToString());
+                }
+            }
+
+
+
+        }
     }
 }

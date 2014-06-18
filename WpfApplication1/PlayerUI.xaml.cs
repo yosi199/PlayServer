@@ -33,6 +33,7 @@ namespace PlayServer
         private SynchronousSocketListener server;
         private MainPlayer player;
 
+        private Boolean _readyToPlay = true;
 
         public PlayerUI()
         {
@@ -52,9 +53,10 @@ namespace PlayServer
             // get the player instance
             player = MainPlayer.Instance;
             player.setPlayer(LocalMediaPlayerClass.Instance);
+            LocalMediaPlayerClass.RegisterUi(this);
 
             // Set app version in title
-            setVersion();
+            SetVersion();
 
         }
 
@@ -63,7 +65,7 @@ namespace PlayServer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void loadDirBtn(object sender, RoutedEventArgs e)
+        private void LoadDirBtn(object sender, RoutedEventArgs e)
         {
 
 
@@ -92,16 +94,30 @@ namespace PlayServer
         /// <param name="e"></param>
         private void PlayBtn(object sender, RoutedEventArgs e)
         {
-            player.Play();
+            // If nothing is being played, clicking the button will start to play
+            if (_readyToPlay)
+            {
+                player.Play();
+                Play.Content = "Stop";
+                _readyToPlay = false;
+            }
+
+                // If already playing, stop it and change btn text
+            else if (!_readyToPlay)
+            {
+                player.Stop();
+                Play.Content = "Play";
+                _readyToPlay = true;
+            }
         }
 
-        private void setVersion() {
+        private void SetVersion() {
             // Get auto incremented version number and display at title
             string version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
             Title = String.Format(Constants.title, version);
         }
 
-        public void UpdateUIFromNewThread(String message)
+        public void UpdateUiFromNewThread(String message)
         {
 
             Dispatcher.BeginInvoke(
@@ -112,9 +128,19 @@ namespace PlayServer
             loadBTN.IsEnabled = true;
             pb.IsIndeterminate = false;
             pb.IsEnabled = false;
-            pbLabel.Content = string.Format(message, fm.filesCount, fm.foldersCount);
             Play.Visibility = Visibility.Visible;
             pbLabel.Focus();
+
+                        try
+            {
+                pbLabel.Content = string.Format(message, fm.filesCount, fm.foldersCount);
+            }
+
+            catch(Exception e)
+            {
+                pbLabel.Content = "";
+                Console.WriteLine(e.Message.ToString());
+            }
 
         }
          ));
