@@ -22,7 +22,6 @@ namespace PlayServer.MessageTypes
             set { _currentVolume = value; }
         }
 
-
         public float MaxVolume
         {
             get { return _maxVolume; }
@@ -41,9 +40,10 @@ namespace PlayServer.MessageTypes
         {
             MMDeviceEnumerator devEnum = new MMDeviceEnumerator();
             MMDevice defaultDevice = devEnum.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
-            CurrentVolume = defaultDevice.AudioEndpointVolume.MasterVolumeLevel;
-            _maxVolume = defaultDevice.AudioEndpointVolume.VolumeRange.MaxdB;
-            _minVolume = defaultDevice.AudioEndpointVolume.VolumeRange.MindB;
+
+            _currentVolume = defaultDevice.AudioEndpointVolume.StepInformation.Step;
+            _maxVolume = defaultDevice.AudioEndpointVolume.StepInformation.StepCount;
+            _minVolume = 0;
 
         }
 

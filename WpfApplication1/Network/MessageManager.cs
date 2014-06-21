@@ -70,7 +70,7 @@ namespace PlayServer.Network
                         returnedValue = new ServerStatusMessage().ToJson<ServerStatusMessage>();
                         break;
                     case "Volume":
-                        mainW.Dispatcher.Invoke(() => player.Volume(messageObj.Get("WhichWay")));
+                        mainW.Dispatcher.Invoke(() => returnedValue = player.Volume(messageObj.Get("progress").ToInt(), messageObj.Get("WhichWay")));
                         break; ;
 
                 }

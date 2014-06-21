@@ -26,7 +26,7 @@ namespace PlayServer.Network
         public static string data = null;
         private static PlayerUI mainW = null;
 
-        public SynchronousSocketListener() { StartListening();  }
+        public SynchronousSocketListener() { StartListening(); }
 
         public static void StartListening()
         {
@@ -73,7 +73,7 @@ namespace PlayServer.Network
                         if (data.IndexOf("<EOF>") > -1)
                         {
                             data = data.Replace("<EOF>", "");
-                            messageReturned = messageHandler.figureMessageType(data);                         
+                            messageReturned = messageHandler.figureMessageType(data);
                             break;
                         }
                     }
@@ -85,7 +85,7 @@ namespace PlayServer.Network
                     byte[] msg = Encoding.ASCII.GetBytes(messageReturned);
 
                     handler.Send(msg);
-                    Console.WriteLine("Message sent: " +Encoding.ASCII.GetString(msg));
+                    Console.WriteLine("Message sent: " + Encoding.ASCII.GetString(msg));
                     handler.Shutdown(SocketShutdown.Both);
                     handler.Close();
                 }
@@ -94,7 +94,7 @@ namespace PlayServer.Network
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
-               // StartListening();
+                // StartListening();
             }
 
             Console.WriteLine("\nPress ENTER to continue...");

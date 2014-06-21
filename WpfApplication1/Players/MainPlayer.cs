@@ -18,11 +18,19 @@ namespace PlayServer.Players
     {
 
         private IPlayCommands playerChoosen;
+        private MMDevice device;
+
         private static MainPlayer mainPlayerInstance;
 
         public static CountdownEvent mWaitForParsing;
 
-        private MainPlayer() { mWaitForParsing = new CountdownEvent(1); }
+        private MainPlayer()
+        {
+            mWaitForParsing = new CountdownEvent(1);
+            MMDeviceEnumerator DevEnum = new MMDeviceEnumerator();
+            device = DevEnum.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
+            device.AudioEndpointVolume.OnVolumeNotification += new AudioEndpointVolumeNotificationDelegate(VolumeChangedLocaly);
+        }
 
         public static MainPlayer Instance
         {
@@ -72,30 +80,45 @@ namespace PlayServer.Players
         /// </summary>
         /// <param name="whichWay">Whether it should increment or decrement</param>
         /// <returns>Current Volume</returns>
-        public string Volume(string whichWay)
+        public string Volume(int newVolume, string whichWay)
         {
             string volume = string.Empty;
             MMDeviceEnumerator devEnum = new MMDeviceEnumerator();
             MMDevice defaultDevice = devEnum.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
 
+
             switch (whichWay)
             {
                 case "Up":
-                    // Increment Volume
-                    defaultDevice.AudioEndpointVolume.MasterVolumeLevel = defaultDevice.AudioEndpointVolume.MasterVolumeLevel + 2;
+                    for (int i = 0; i < newVolume; i++)
+                    {
+                        defaultDevice.AudioEndpointVolume.VolumeStepUp();
+                    }
                     break;
-                    // Decrement Volume
-                case "Down": defaultDevice.AudioEndpointVolume.MasterVolumeLevel = defaultDevice.AudioEndpointVolume.MasterVolumeLevel - 2;
+
+                case "Down":
+                    for (int i = 0; i < newVolume; i++)
+                    {
+                        defaultDevice.AudioEndpointVolume.VolumeStepDown();
+                    }
                     break;
             }
 
 
 
 
-            volume = defaultDevice.AudioEndpointVolume.MasterVolumeLevel.ToString();
+            volume = defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar.ToString();
 
             return volume;
 
         }
+
+        private void VolumeChangedLocaly(AudioVolumeNotificationData data)
+        {
+
+
+
+        }
+
     }
 }

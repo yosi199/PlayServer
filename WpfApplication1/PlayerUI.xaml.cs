@@ -111,7 +111,8 @@ namespace PlayServer
             }
         }
 
-        private void SetVersion() {
+        private void SetVersion()
+        {
             // Get auto incremented version number and display at title
             string version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
             Title = String.Format(Constants.title, version);
@@ -131,12 +132,12 @@ namespace PlayServer
             Play.Visibility = Visibility.Visible;
             pbLabel.Focus();
 
-                        try
+            try
             {
                 pbLabel.Content = string.Format(message, fm.filesCount, fm.foldersCount);
             }
 
-            catch(Exception e)
+            catch (Exception e)
             {
                 pbLabel.Content = "";
                 Console.WriteLine(e.Message.ToString());
