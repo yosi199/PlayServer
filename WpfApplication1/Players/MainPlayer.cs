@@ -1,4 +1,5 @@
 ﻿using CoreAudioApi;
+using PlayServer.MessageTypes;
 using PlayServer.Player;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PlayServer.Network;
 using System.Threading;
+using ServiceStack;
 
 namespace PlayServer.Players
 {
@@ -26,10 +28,7 @@ namespace PlayServer.Players
 
         private MainPlayer()
         {
-            mWaitForParsing = new CountdownEvent(1);
-            MMDeviceEnumerator DevEnum = new MMDeviceEnumerator();
-            device = DevEnum.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
-            device.AudioEndpointVolume.OnVolumeNotification += new AudioEndpointVolumeNotificationDelegate(VolumeChangedLocaly);
+            mWaitForParsing = new CountdownEvent(1);          
         }
 
         public static MainPlayer Instance
@@ -113,12 +112,6 @@ namespace PlayServer.Players
 
         }
 
-        private void VolumeChangedLocaly(AudioVolumeNotificationData data)
-        {
-
-
-
-        }
 
     }
 }

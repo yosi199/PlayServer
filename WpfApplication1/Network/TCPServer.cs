@@ -2,7 +2,12 @@
 using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using PlayServer.MessageTypes;
+using ServiceStack;
 
 
 namespace PlayServer.Network
@@ -25,6 +30,7 @@ namespace PlayServer.Network
         // Incoming data from the client.
         public static string data = null;
         private static PlayerUI mainW = null;
+        private static Socket handler;
 
         public SynchronousSocketListener() { StartListening(); }
 
@@ -61,7 +67,7 @@ namespace PlayServer.Network
                 {
                     Console.WriteLine("Waiting for a connection...");
                     // Program is suspended while waiting for an incoming connection.
-                    Socket handler = listener.Accept();
+                    handler = listener.Accept();
                     data = null;
 
                     // An incoming connection needs to be processed.
@@ -82,12 +88,16 @@ namespace PlayServer.Network
                     Console.WriteLine("Text received : {0}", data);
 
                     // Echo the data back to the client.
+
+
                     byte[] msg = Encoding.ASCII.GetBytes(messageReturned);
 
                     handler.Send(msg);
                     Console.WriteLine("Message sent: " + Encoding.ASCII.GetString(msg));
                     handler.Shutdown(SocketShutdown.Both);
                     handler.Close();
+
+
                 }
 
             }
@@ -106,5 +116,7 @@ namespace PlayServer.Network
         {
             mainW = mainUI;
         }
+
+
     }
 }
