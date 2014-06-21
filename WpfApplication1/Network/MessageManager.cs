@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PlayServer.MessageTypes;
+using ServiceStack;
 using ServiceStack.Text;
 using PlayServer.Players;
 
@@ -64,7 +66,12 @@ namespace PlayServer.Network
                     case "Stop": mainW.Dispatcher.Invoke(() => player.Stop()); break;
                     case "Backward": mainW.Dispatcher.Invoke(() => returnedValue = player.Rewind()); break;
                     case "Forward": mainW.Dispatcher.Invoke(() => returnedValue = player.Forward()); break;
-                    case "DeviceInfo":mainW.Dispatcher.Invoke(()=> mainW.SocketInfo.Content=messageObj.Get("deviceName")); break;
+                    case "DeviceInfo": mainW.Dispatcher.Invoke(() => mainW.SocketInfo.Content = messageObj.Get("deviceName"));
+                        returnedValue = new ServerStatusMessage().ToJson<ServerStatusMessage>();
+                        break;
+                    case "Volume":
+                        mainW.Dispatcher.Invoke(() => player.Volume(messageObj.Get("WhichWay")));
+                        break; ;
 
                 }
             }

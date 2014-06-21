@@ -1,4 +1,5 @@
-﻿using PlayServer.Player;
+﻿using CoreAudioApi;
+using PlayServer.Player;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,6 +65,37 @@ namespace PlayServer.Players
         {
             string returnValue = playerChoosen.Forward();
             return returnValue;
+        }
+
+        /// <summary>
+        /// Increment/Decrement master volume
+        /// </summary>
+        /// <param name="whichWay">Whether it should increment or decrement</param>
+        /// <returns>Current Volume</returns>
+        public string Volume(string whichWay)
+        {
+            string volume = string.Empty;
+            MMDeviceEnumerator devEnum = new MMDeviceEnumerator();
+            MMDevice defaultDevice = devEnum.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
+
+            switch (whichWay)
+            {
+                case "Up":
+                    // Increment Volume
+                    defaultDevice.AudioEndpointVolume.MasterVolumeLevel = defaultDevice.AudioEndpointVolume.MasterVolumeLevel + 2;
+                    break;
+                    // Decrement Volume
+                case "Down": defaultDevice.AudioEndpointVolume.MasterVolumeLevel = defaultDevice.AudioEndpointVolume.MasterVolumeLevel - 2;
+                    break;
+            }
+
+
+
+
+            volume = defaultDevice.AudioEndpointVolume.MasterVolumeLevel.ToString();
+
+            return volume;
+
         }
     }
 }

@@ -85,6 +85,7 @@ namespace PlayServer.Network
                     byte[] msg = Encoding.ASCII.GetBytes(messageReturned);
 
                     handler.Send(msg);
+                    Console.WriteLine("Message sent: " +Encoding.ASCII.GetString(msg));
                     handler.Shutdown(SocketShutdown.Both);
                     handler.Close();
                 }
@@ -93,7 +94,7 @@ namespace PlayServer.Network
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
-                StartListening();
+               // StartListening();
             }
 
             Console.WriteLine("\nPress ENTER to continue...");

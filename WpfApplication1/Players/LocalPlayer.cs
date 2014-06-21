@@ -113,7 +113,11 @@ namespace PlayServer.Player
 
             }
 
-            catch (Exception e) { succeed = false; }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                succeed = false;
+            }
 
             return succeed;
 
