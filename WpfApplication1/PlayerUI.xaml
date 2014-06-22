@@ -17,6 +17,8 @@
         <Grid HorizontalAlignment="Left" Height="100" Margin="10,10,-1,0" VerticalAlignment="Top" Width="472" Grid.ColumnSpan="2">
             <Button Content="Load Files" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="104" Click="LoadDirBtn" Height="35" x:Name="loadBTN" Foreground="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}" Margin="1,0,367,65" Background="#FFFF4455" BorderBrush="{x:Null}" BorderThickness="8,1,1,1" Opacity="0.8"/>
             <Button Content="Play" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="104" Click="PlayBtn" Height="35" x:Name="Play" Foreground="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}" Margin="109,0,259,65" Background="#FFFF4455" BorderBrush="{x:Null}" Opacity="0.8" Visibility="Hidden"/>
+            <Button Content="Forward" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="104" Click="ForwardBtn" Height="35" x:Name="Forward" Foreground="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}" Margin="358,0,10,65" Background="#FFFF4455" BorderBrush="{x:Null}" Opacity="0.8" Visibility="Visible"/>
+
             <Label Focusable="True" Content="Status" HorizontalAlignment="Left" Margin="0,0,0,-177" VerticalAlignment="Bottom" Name="pbLabel" FontSize="15" FontFamily="Helvetica Neue" Foreground="White" Width="472"/>
 
 

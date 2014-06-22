@@ -39,10 +39,7 @@ namespace PlayServer.Network
             // Data buffer for incoming data.
             byte[] bytes = new Byte[1024];
 
-            MessageManager messageHandler = MessageManager.Instance;
-            messageHandler.registerUI(mainW);
-
-            string messageReturned = string.Empty;
+        
 
             // Establish the local endpoint for the socket.
             // Dns.GetHostName returns the name of the 
@@ -65,9 +62,16 @@ namespace PlayServer.Network
                 // Start listening for connections.
                 while (true)
                 {
+
+                    MessageManager messageHandler = MessageManager.Instance;
+                    messageHandler.registerUI(mainW);
+
+                    string messageReturned = string.Empty;
+
                     Console.WriteLine("Waiting for a connection...");
                     // Program is suspended while waiting for an incoming connection.
                     handler = listener.Accept();
+                    Console.WriteLine("Accepted a connection...");
                     data = null;
 
                     // An incoming connection needs to be processed.
@@ -89,14 +93,10 @@ namespace PlayServer.Network
 
                     // Echo the data back to the client.
 
+                    Send(messageReturned);
 
-                    byte[] msg = Encoding.ASCII.GetBytes(messageReturned);
-
-                    handler.Send(msg);
-                    Console.WriteLine("Message sent: " + Encoding.ASCII.GetString(msg));
                     handler.Shutdown(SocketShutdown.Both);
                     handler.Close();
-
 
                 }
 
@@ -107,8 +107,8 @@ namespace PlayServer.Network
                 // StartListening();
             }
 
-            Console.WriteLine("\nPress ENTER to continue...");
-            Console.Read();
+            //  Console.WriteLine("\nPress ENTER to continue...");
+            //   Console.Read();
 
         }
 
@@ -117,6 +117,14 @@ namespace PlayServer.Network
             mainW = mainUI;
         }
 
+        public static void Send(string message)
+        {
+            byte[] msg = Encoding.ASCII.GetBytes(message + "\n");
 
+            handler.Send(msg);
+            Console.WriteLine("Message sent: " + Encoding.ASCII.GetString(msg));
+            
+
+        }
     }
 }

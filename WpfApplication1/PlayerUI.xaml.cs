@@ -111,6 +111,12 @@ namespace PlayServer
             }
         }
 
+        private void ForwardBtn(object sender, RoutedEventArgs e)
+        {
+            string nextSong = player.Forward();
+            SynchronousSocketListener.Send(nextSong);
+        }
+
         private void SetVersion()
         {
             // Get auto incremented version number and display at title

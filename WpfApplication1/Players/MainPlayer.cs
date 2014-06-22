@@ -128,9 +128,8 @@ namespace PlayServer.Players
 
         private void AudioEndpointVolume_OnVolumeNotification(AudioVolumeNotificationData data)
         {
-
             // Play with this interval to change the rate of updates the server will send to the client on volume changes
-            VolumeTimer.Interval = 50;
+            VolumeTimer.Interval = 10;
             VolumeTimer.Stop();
             VolumeTimer.Start();
 
@@ -140,18 +139,22 @@ namespace PlayServer.Players
         {
             VolumeTimer.Stop();
             string messageUpdate;
+
             lock (_lock)
             {
                 ++_volumeCalledCounter;
 
                 if (_volumeCalledCounter <= 1)
                 {
+                    _volumeCalledCounter = 0;
 
                     messageUpdate = new ServerStatusMessage().ToJson<ServerStatusMessage>();
-
-                    _volumeCalledCounter = 0;
+                    SynchronousSocketListener.Send(messageUpdate);
                 }
             }
+
+
+
 
         }
     }

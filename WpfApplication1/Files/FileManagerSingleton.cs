@@ -80,6 +80,7 @@ namespace PlayServer.Files
                 // Index all files to JSON in a list Asynchronosly 
                 fileCount = 0;
                 folderCount = 1;
+                files.Clear();
                 Task loadDirAsync = new Task(() => getMusicFromPath(di));
                 loadDirAsync.Start();
 
@@ -102,7 +103,7 @@ namespace PlayServer.Files
 
         private void getMusicFromPath(DirectoryInfo di)
         {
-           // FullDirList(di, "*.mp3");
+            // FullDirList(di, "*.mp3");
             GetFilesFromDir(di, "*.mp3");
 
 
@@ -112,81 +113,6 @@ namespace PlayServer.Files
 
 
         }
-
-        private void FullDirList(DirectoryInfo dir, string searchPattern)
-        {
-
-            lock (_locker)
-            {
-                try
-                {
-
-
-                    foreach (FileInfo f in dir.GetFiles(searchPattern))
-                    {
-                        string artist = string.Empty;
-                        string album = string.Empty;
-                        string title = string.Empty;
-                        string path = string.Empty;
-                        int index;
-
-                        string songJSON = string.Empty;
-
-                        // Get song information and create a new Json object
-                        try
-                        {
-                            TagLib.File tagFile = TagLib.File.Create(f.FullName.ToString());
-
-                            if (tagFile.Tag.Performers.Count() > 0)
-                            {
-                                artist = tagFile.Tag.Performers[0];
-                            }
-
-                            album = tagFile.Tag.Album;
-                            title = tagFile.Tag.Title;
-                            path = f.FullName.ToString();
-                            index = fileCount;
-
-
-                            Song song = new Song(artist, album, title, path, index);
-                            songJSON = song.ToJson<Song>();
-
-                        }
-
-                        catch (Exception e)
-                        {
-                            e.Message.ToString();
-                        }
-
-
-                        files.Add(songJSON);
-                        fileCount++;
-
-                    }
-                }
-
-                catch
-                {
-                    //Console.WriteLine("Directory {0}  \n could not be accessed!!!!", dir.FullName);
-                    return;
-                }
-
-            }
-
-
-            // process each directory
-            foreach (DirectoryInfo d in dir.GetDirectories())
-            {
-                folders.Add(d);
-                folderCount++;
-
-                FullDirList(d, searchPattern);
-
-            }
-
-
-        }
-
 
         private void GetFilesFromDir(DirectoryInfo dir, string searchPattern)
         {
@@ -216,7 +142,7 @@ namespace PlayServer.Files
                     album = tagFile.Tag.Album;
                     title = tagFile.Tag.Title;
                     path = f.FullName.ToString();
-            
+
 
 
                     Song song = new Song(artist, album, title, path, index);
@@ -230,7 +156,7 @@ namespace PlayServer.Files
 
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message.ToString());
+                    Console.WriteLine(e.Message);
                 }
             }
 
