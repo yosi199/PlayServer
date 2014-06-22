@@ -72,6 +72,10 @@ namespace PlayServer.Network
                     // Program is suspended while waiting for an incoming connection.
                     handler = listener.Accept();
                     Console.WriteLine("Accepted a connection...");
+
+                    // Inform UI that server is now connected to a client
+                    PlayerUI.IsServerConnected = true;
+
                     data = null;
 
                     // An incoming connection needs to be processed.
@@ -122,8 +126,7 @@ namespace PlayServer.Network
             byte[] msg = Encoding.ASCII.GetBytes(message + "\n");
 
             handler.Send(msg);
-            Console.WriteLine("Message sent: " + Encoding.ASCII.GetString(msg));
-            
+            Console.WriteLine("Message sent: " + Encoding.ASCII.GetString(msg));          
 
         }
     }

@@ -33,6 +33,8 @@ namespace PlayServer
         private SynchronousSocketListener server;
         private MainPlayer player;
 
+        public static bool IsServerConnected = false;
+
         private Boolean _readyToPlay = true;
 
         public PlayerUI()
@@ -94,10 +96,17 @@ namespace PlayServer
         /// <param name="e"></param>
         private void PlayBtn(object sender, RoutedEventArgs e)
         {
+            string messageToServer;
             // If nothing is being played, clicking the button will start to play
             if (_readyToPlay)
             {
-                player.Play();
+                messageToServer = player.Play();
+                if (IsServerConnected)
+                {
+                    SynchronousSocketListener.Send(messageToServer);
+                }
+                
+
                 Play.Content = "Stop";
                 _readyToPlay = false;
             }
@@ -113,8 +122,12 @@ namespace PlayServer
 
         private void ForwardBtn(object sender, RoutedEventArgs e)
         {
-            string nextSong = player.Forward();
-            SynchronousSocketListener.Send(nextSong);
+            string messageToServer = player.Forward();
+
+            if (IsServerConnected)
+            {
+                SynchronousSocketListener.Send(messageToServer);
+            }
         }
 
         private void SetVersion()
