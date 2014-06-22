@@ -1,4 +1,5 @@
-﻿using CoreAudioApi;
+﻿using System.Timers;
+using CoreAudioApi;
 using PlayServer.MessageTypes;
 using PlayServer.Player;
 using System;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 using PlayServer.Network;
 using System.Threading;
 using ServiceStack;
+using Timer = System.Timers.Timer;
 
 namespace PlayServer.Players
 {
@@ -16,19 +18,31 @@ namespace PlayServer.Players
     ///  This class serves as the main player that communicates and control the
     ///  choosen players. A part of the strategy pattern.
     /// </summary>
-    class MainPlayer : IPlayCommands
+    internal class MainPlayer : IPlayCommands
     {
 
         private IPlayCommands playerChoosen;
         private MMDevice device;
+        private static Timer VolumeTimer;
+        private int _volumeCalledCounter = 0;
+        private Object _lock;
 
         private static MainPlayer mainPlayerInstance;
 
         public static CountdownEvent mWaitForParsing;
 
+
+
         private MainPlayer()
         {
-            mWaitForParsing = new CountdownEvent(1);          
+            _lock = new object();
+            mWaitForParsing = new CountdownEvent(1);
+            MMDeviceEnumerator DevEnum = new MMDeviceEnumerator();
+            device = DevEnum.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
+            device.AudioEndpointVolume.OnVolumeNotification +=
+                new AudioEndpointVolumeNotificationDelegate(AudioEndpointVolume_OnVolumeNotification);
+            VolumeTimer = new Timer();
+            VolumeTimer.Elapsed += new ElapsedEventHandler(VolumeTimer_Tick);
         }
 
         public static MainPlayer Instance
@@ -44,7 +58,7 @@ namespace PlayServer.Players
             }
         }
 
-        public void setPlayer(IPlayCommands player)
+        public void SetPlayer(IPlayCommands player)
         {
             playerChoosen = player;
         }
@@ -112,6 +126,33 @@ namespace PlayServer.Players
 
         }
 
+        private void AudioEndpointVolume_OnVolumeNotification(AudioVolumeNotificationData data)
+        {
 
+            // Play with this interval to change the rate of updates the server will send to the client on volume changes
+            VolumeTimer.Interval = 50;
+            VolumeTimer.Stop();
+            VolumeTimer.Start();
+
+        }
+
+        private void VolumeTimer_Tick(object sender, EventArgs e)
+        {
+            VolumeTimer.Stop();
+            string messageUpdate;
+            lock (_lock)
+            {
+                ++_volumeCalledCounter;
+
+                if (_volumeCalledCounter <= 1)
+                {
+
+                    messageUpdate = new ServerStatusMessage().ToJson<ServerStatusMessage>();
+
+                    _volumeCalledCounter = 0;
+                }
+            }
+
+        }
     }
 }

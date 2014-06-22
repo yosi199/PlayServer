@@ -52,7 +52,7 @@ namespace PlayServer
 
             // get the player instance
             player = MainPlayer.Instance;
-            player.setPlayer(LocalMediaPlayerClass.Instance);
+            player.SetPlayer(LocalMediaPlayerClass.Instance);
             LocalMediaPlayerClass.RegisterUi(this);
 
             // Set app version in title
