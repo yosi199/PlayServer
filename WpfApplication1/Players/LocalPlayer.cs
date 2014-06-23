@@ -21,7 +21,6 @@ namespace PlayServer.Player
 
         // Singeltons instances;
         private static FileManger instance = FileManger.Instance;
-        private static LocalMediaPlayerClass playerInstance;
         private static PlayerUI mainW;
 
         // Lock Object
@@ -33,21 +32,7 @@ namespace PlayServer.Player
         private static System.Windows.Media.MediaPlayer mp = new System.Windows.Media.MediaPlayer();
 
 
-        private LocalMediaPlayerClass() { }
-
-        public static LocalMediaPlayerClass Instance
-        {
-            get
-            {
-                if (playerInstance == null)
-                {
-                    playerInstance = new LocalMediaPlayerClass();
-                }
-                return playerInstance;
-
-
-            }
-        }
+        public LocalMediaPlayerClass() { }
 
         public static void RegisterUi(PlayerUI main)
         {
@@ -167,9 +152,9 @@ namespace PlayServer.Player
             lock (_locker)
             {
 
-                if (_currentPosition < instance.FilesInfoList.Count())
+                if (_currentPosition < (instance.FilesInfoList.Count()-1))
                 {
-                    _currentPosition = ++_currentPosition;
+                     ++_currentPosition;
                     jsonStringFile = Play();
 
                 }

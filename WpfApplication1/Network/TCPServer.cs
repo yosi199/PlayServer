@@ -39,7 +39,7 @@ namespace PlayServer.Network
             // Data buffer for incoming data.
             byte[] bytes = new Byte[1024];
 
-        
+
 
             // Establish the local endpoint for the socket.
             // Dns.GetHostName returns the name of the 
@@ -123,10 +123,14 @@ namespace PlayServer.Network
 
         public static void Send(string message)
         {
-            byte[] msg = Encoding.ASCII.GetBytes(message + "\n");
+            if (handler!=null)
+            {
 
-            handler.Send(msg);
-            Console.WriteLine("Message sent: " + Encoding.ASCII.GetString(msg));          
+                byte[] msg = Encoding.ASCII.GetBytes(message + "\n");
+
+                handler.Send(msg);
+                Console.WriteLine("Message sent: " + Encoding.ASCII.GetString(msg));
+            }
 
         }
     }
