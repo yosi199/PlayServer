@@ -21,7 +21,7 @@ namespace PlayServer.Player
 
         // Singeltons instances;
         private static FileManger instance = FileManger.Instance;
-        private static PlayerUI mainW;
+        private PlayerUI mainW;
 
         // Lock Object
         private object _locker = new object();
@@ -32,9 +32,7 @@ namespace PlayServer.Player
         private static System.Windows.Media.MediaPlayer mp = new System.Windows.Media.MediaPlayer();
 
 
-        public LocalMediaPlayerClass() { }
-
-        public static void RegisterUi(PlayerUI main)
+        public LocalMediaPlayerClass(PlayerUI main)
         {
             mainW = main;
         }
