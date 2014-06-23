@@ -52,7 +52,7 @@ namespace PlayServer.Network
         /// </summary>
         /// <param name="message">A JSON string that encapsulate the command</param>
         /// <returns>passes a string back to the server</returns>
-        public string figureMessageType(string message)
+        public string FigureMessageType(string message)
         {
             string returnedValue = string.Empty;
             if (message.Length > 0)
@@ -71,7 +71,7 @@ namespace PlayServer.Network
                         break;
                     case "Volume":
                         mainW.Dispatcher.Invoke(() => returnedValue = player.Volume(messageObj.Get("progress").ToInt(), messageObj.Get("WhichWay")));
-                        break; ;
+                        break; 
 
                 }
             }

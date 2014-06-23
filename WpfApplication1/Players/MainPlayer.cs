@@ -32,7 +32,6 @@ namespace PlayServer.Players
         public static CountdownEvent mWaitForParsing;
 
 
-
         private MainPlayer()
         {
             _lock = new object();

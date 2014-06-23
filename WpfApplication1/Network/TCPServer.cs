@@ -87,7 +87,7 @@ namespace PlayServer.Network
                         if (data.IndexOf("<EOF>") > -1)
                         {
                             data = data.Replace("<EOF>", "");
-                            messageReturned = messageHandler.figureMessageType(data);
+                            messageReturned = messageHandler.FigureMessageType(data);
                             break;
                         }
                     }

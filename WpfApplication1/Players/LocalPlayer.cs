@@ -33,7 +33,6 @@ namespace PlayServer.Player
         private static System.Windows.Media.MediaPlayer mp = new System.Windows.Media.MediaPlayer();
 
 
-
         private LocalMediaPlayerClass() { }
 
         public static LocalMediaPlayerClass Instance
