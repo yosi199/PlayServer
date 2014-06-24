@@ -8,9 +8,11 @@ namespace PlayServer.Player
 {
     interface IPlayCommands
     {
-         string Play();
-         bool Stop();
-         string Rewind();
-         string Forward();
+        string Play();
+        bool Stop();
+        string Rewind();
+        string Forward();
+
+        bool SetShuffle(bool isShuffle);
     }
 }

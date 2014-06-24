@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PlayServer.MessageTypes;
+using PlayServer.Player;
 using ServiceStack;
 using ServiceStack.Text;
 using PlayServer.Players;
@@ -62,16 +63,23 @@ namespace PlayServer.Network
 
                 switch (type)
                 {
+                    // Player related messages
                     case "Play": mainW.Dispatcher.Invoke(() => returnedValue = player.Play()); break;
                     case "Stop": mainW.Dispatcher.Invoke(() => player.Stop()); break;
                     case "Backward": mainW.Dispatcher.Invoke(() => returnedValue = player.Rewind()); break;
                     case "Forward": mainW.Dispatcher.Invoke(() => returnedValue = player.Forward()); break;
+                    case "Shuffle":
+                        bool shuffle = Boolean.Parse(messageObj.Get("IsShuffleOn"));
+                        mainW.Dispatcher.Invoke(() => player.SetShuffle(shuffle));
+                        returnedValue = new ServerStatusMessage().ToJson<ServerStatusMessage>();
+                        break;
+
                     case "DeviceInfo": mainW.Dispatcher.Invoke(() => mainW.SocketInfo.Content = messageObj.Get("deviceName"));
                         returnedValue = new ServerStatusMessage().ToJson<ServerStatusMessage>();
                         break;
                     case "Volume":
                         mainW.Dispatcher.Invoke(() => returnedValue = player.Volume(messageObj.Get("progress").ToInt(), messageObj.Get("WhichWay")));
-                        break; 
+                        break;
 
                 }
             }

@@ -27,6 +27,7 @@ namespace PlayServer.Player
         private object _locker = new object();
 
         private int _currentPosition = 0;
+        public static bool _isShuffle = false;
         private String jsonStringFile;
 
         private static System.Windows.Media.MediaPlayer mp = new System.Windows.Media.MediaPlayer();
@@ -45,6 +46,13 @@ namespace PlayServer.Player
 
                 lock (_locker)
                 {
+                    if (_isShuffle)
+                    {
+                        Console.WriteLine(_currentPosition);
+                        Random r = new Random();
+                        _currentPosition = r.Next(0, instance.FilesInfoList.Count);
+                    }
+
                     if (instance.FilesInfoList.Count > 0)
                     {
                         // Get file path from Json
@@ -150,15 +158,21 @@ namespace PlayServer.Player
             lock (_locker)
             {
 
-                if (_currentPosition < (instance.FilesInfoList.Count()-1))
+                if (_currentPosition < (instance.FilesInfoList.Count() - 1))
                 {
-                     ++_currentPosition;
+                    ++_currentPosition;
                     jsonStringFile = Play();
 
                 }
 
                 return jsonStringFile;
             }
+        }
+
+        public bool SetShuffle(bool isShuffleOn)
+        {
+            _isShuffle = isShuffleOn;
+            return _isShuffle;
         }
     }
 }

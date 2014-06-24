@@ -87,6 +87,12 @@ namespace PlayServer.Players
             return returnValue;
         }
 
+        public bool SetShuffle(bool shuffle)
+        {
+            bool isShuffleSet = playerChoosen.SetShuffle(shuffle);
+            return isShuffleSet;
+        }
+
         /// <summary>
         /// Increment/Decrement master volume
         /// </summary>
