@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CoreAudioApi;
 using PlayServer.Player;
+using PlayServer.Players;
 
 namespace PlayServer.MessageTypes
 {
@@ -16,6 +17,9 @@ namespace PlayServer.MessageTypes
         private float _maxVolume = 0;
         private float _minVolume = 0;
         private bool _isShuffleOn = false;
+        private string _playerTypeSet = "";
+
+
 
         public string messageType { get { return _messageType; } }
         public float CurrentVolume
@@ -38,6 +42,8 @@ namespace PlayServer.MessageTypes
 
         public bool IsShuffleOn { get { return _isShuffleOn; } set { _isShuffleOn = value; } }
 
+        public string PlayerTypeSet { get { return _playerTypeSet; } }
+
 
 
         public ServerStatusMessage()
@@ -49,7 +55,7 @@ namespace PlayServer.MessageTypes
             _maxVolume = defaultDevice.AudioEndpointVolume.StepInformation.StepCount;
             _minVolume = 0;
             _isShuffleOn = LocalMediaPlayerClass._isShuffle;
-
+            _playerTypeSet = MainPlayer.CurrentPlayerSet;
         }
 
 

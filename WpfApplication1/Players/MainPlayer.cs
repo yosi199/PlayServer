@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PlayServer.Network;
 using System.Threading;
+using PlayServer.Utilities;
 using ServiceStack;
 using Timer = System.Timers.Timer;
 
@@ -30,6 +31,7 @@ namespace PlayServer.Players
         private static MainPlayer mainPlayerInstance;
 
         public static CountdownEvent mWaitForParsing;
+        public static string CurrentPlayerSet = Constants.LocalPlayer;
 
 
         private MainPlayer()
@@ -60,6 +62,19 @@ namespace PlayServer.Players
         public void SetPlayer(IPlayCommands player)
         {
             playerChoosen = player;
+
+            // Console.WriteLine(playerChoosen.GetType().ToString());
+
+            switch (playerChoosen.GetType().ToString())
+            {
+                case "PlayServer.Player.LocalMediaPlayerClass":
+                    CurrentPlayerSet = Constants.LocalPlayer;
+                    break;
+
+
+            }
+
+
         }
 
         public string Play()

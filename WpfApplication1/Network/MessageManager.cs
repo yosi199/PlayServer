@@ -63,7 +63,12 @@ namespace PlayServer.Network
 
                 switch (type)
                 {
-                    // Player related messages
+
+                    // Choose player
+                    case "SetPlayer":
+                        break;
+
+                    // Player Control related messages
                     case "Play": mainW.Dispatcher.Invoke(() => returnedValue = player.Play()); break;
                     case "Stop": mainW.Dispatcher.Invoke(() => player.Stop()); break;
                     case "Backward": mainW.Dispatcher.Invoke(() => returnedValue = player.Rewind()); break;
@@ -74,6 +79,7 @@ namespace PlayServer.Network
                         returnedValue = new ServerStatusMessage().ToJson<ServerStatusMessage>();
                         break;
 
+                        // Computer Controls related messages
                     case "DeviceInfo": mainW.Dispatcher.Invoke(() => mainW.SocketInfo.Content = messageObj.Get("deviceName"));
                         returnedValue = new ServerStatusMessage().ToJson<ServerStatusMessage>();
                         break;

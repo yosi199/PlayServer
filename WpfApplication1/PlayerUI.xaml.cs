@@ -34,6 +34,8 @@ namespace PlayServer
         private MainPlayer player;
 
         public static bool IsServerConnected = false;
+        public static Enum PlayerTypeSet;
+
 
         private Boolean _readyToPlay = true;
 
@@ -55,7 +57,7 @@ namespace PlayServer
             // get the player instance
             player = MainPlayer.Instance;
             player.SetPlayer(new LocalMediaPlayerClass(this));
-          
+
 
             // Set app version in title
             SetVersion();
@@ -105,7 +107,7 @@ namespace PlayServer
                 {
                     SynchronousSocketListener.Send(messageToServer);
                 }
-                
+
 
                 Play.Content = "Stop";
                 _readyToPlay = false;
@@ -184,7 +186,6 @@ namespace PlayServer
       ));
 
         }
-
 
     }
 }
