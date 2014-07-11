@@ -47,12 +47,7 @@ namespace PlayServer.Player
 
                 lock (_locker)
                 {
-                    if (_isShuffle)
-                    {
-                        Console.WriteLine(_currentPosition);
-                        Random r = new Random();
-                        _currentPosition = r.Next(0, instance.FilesInfoList.Count);
-                    }
+
 
                     if (instance.FilesInfoList.Count > 0)
                     {
@@ -72,7 +67,7 @@ namespace PlayServer.Player
 
                         // Once the song finised playing, forward to the next one
                         mp.MediaEnded += (sender, e) => Forward();
-                        SynchronousSocketListener.Send(jsonStringFile);
+                        // SynchronousSocketListener.Send(jsonStringFile);
                     }
                 }
 
@@ -162,7 +157,17 @@ namespace PlayServer.Player
 
                 if (_currentPosition < (instance.FilesInfoList.Count() - 1))
                 {
-                    ++_currentPosition;
+                    if (_isShuffle)
+                    {
+                        Console.WriteLine(_currentPosition);
+                        Random r = new Random();
+                        _currentPosition = r.Next(0, instance.FilesInfoList.Count);
+                    }
+
+                    else
+                    {
+                        ++_currentPosition;
+                    }
                     jsonStringFile = Play();
 
                 }

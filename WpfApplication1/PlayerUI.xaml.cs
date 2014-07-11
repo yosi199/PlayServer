@@ -18,6 +18,7 @@ using System.Threading;
 using PlayServer.Network;
 using PlayServer.Player;
 using PlayServer.Files;
+using PlayServer.Players.SoundCloud;
 using PlayServer.Utilities;
 using PlayServer.Players;
 
@@ -57,6 +58,17 @@ namespace PlayServer
             // get the player instance
             player = MainPlayer.Instance;
             player.SetPlayer(new LocalMediaPlayerClass(this));
+
+
+            //SoundCloudAPI soundCloud = new SoundCloudAPI();
+
+            //Task soundCloudTask = new Task(() => soundCloud.TryToLogin());
+            //soundCloudTask.Start();
+
+
+
+
+
 
 
             // Set app version in title

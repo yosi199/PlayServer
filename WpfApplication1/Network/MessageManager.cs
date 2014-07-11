@@ -79,6 +79,10 @@ namespace PlayServer.Network
                         returnedValue = new ServerStatusMessage().ToJson<ServerStatusMessage>();
                         break;
 
+                    case "CurrentlyPlaying":
+                        mainW.Dispatcher.Invoke(() => returnedValue = player.GetCurrentSongJSON());
+                        break;
+
                     // Computer Controls related messages
                     case "DeviceInfo": mainW.Dispatcher.Invoke(() => mainW.SocketInfo.Content = messageObj.Get("deviceName"));
                         returnedValue = new ServerStatusMessage().ToJson<ServerStatusMessage>();
