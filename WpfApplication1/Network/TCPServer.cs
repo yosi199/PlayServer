@@ -108,7 +108,7 @@ namespace PlayServer.Network
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
-                // StartListening();
+
             }
 
             //  Console.WriteLine("\nPress ENTER to continue...");

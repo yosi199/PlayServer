@@ -28,10 +28,11 @@ namespace PlayServer.Player
 
         private int _currentPosition = 0;
         public static bool _isShuffle = false;
-        private String jsonStringFile;
+        private static String jsonStringFile;
 
         private static System.Windows.Media.MediaPlayer mp = new System.Windows.Media.MediaPlayer();
 
+        public static String GetCurrentSongPlaying { get { return jsonStringFile; } }
 
         public LocalMediaPlayerClass(PlayerUI main)
         {
@@ -71,6 +72,7 @@ namespace PlayServer.Player
 
                         // Once the song finised playing, forward to the next one
                         mp.MediaEnded += (sender, e) => Forward();
+                        SynchronousSocketListener.Send(jsonStringFile);
                     }
                 }
 
@@ -173,6 +175,11 @@ namespace PlayServer.Player
         {
             _isShuffle = isShuffleOn;
             return _isShuffle;
+        }
+
+        public string GetCurrentSongJSON()
+        {
+            return jsonStringFile;
         }
     }
 }

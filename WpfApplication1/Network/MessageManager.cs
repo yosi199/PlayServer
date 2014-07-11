@@ -79,12 +79,16 @@ namespace PlayServer.Network
                         returnedValue = new ServerStatusMessage().ToJson<ServerStatusMessage>();
                         break;
 
-                        // Computer Controls related messages
+                    // Computer Controls related messages
                     case "DeviceInfo": mainW.Dispatcher.Invoke(() => mainW.SocketInfo.Content = messageObj.Get("deviceName"));
                         returnedValue = new ServerStatusMessage().ToJson<ServerStatusMessage>();
                         break;
                     case "Volume":
                         mainW.Dispatcher.Invoke(() => returnedValue = player.Volume(messageObj.Get("progress").ToInt(), messageObj.Get("WhichWay")));
+                        break;
+
+                    case "KillAndRestart":
+                        new SynchronousSocketListener();
                         break;
 
                 }

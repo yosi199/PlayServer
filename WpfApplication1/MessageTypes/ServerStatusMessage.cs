@@ -17,9 +17,15 @@ namespace PlayServer.MessageTypes
         private float _maxVolume = 0;
         private float _minVolume = 0;
         private bool _isShuffleOn = false;
-        private string _playerTypeSet = "";
+        private string _playerTypeSet = string.Empty;
+        private string _jsonSong = "Not playing";
 
 
+        // Song info
+        public string SongJson {
+            get { return _jsonSong; }
+            set { _jsonSong = value; }
+        }
 
         public string messageType { get { return _messageType; } }
         public float CurrentVolume
@@ -56,6 +62,8 @@ namespace PlayServer.MessageTypes
             _minVolume = 0;
             _isShuffleOn = LocalMediaPlayerClass._isShuffle;
             _playerTypeSet = MainPlayer.CurrentPlayerSet;
+            SongJson = LocalMediaPlayerClass.GetCurrentSongPlaying;
+        
         }
 
 

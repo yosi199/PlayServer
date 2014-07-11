@@ -125,9 +125,9 @@ namespace PlayServer.Files
                 try
                 {
                     int index = fileCount;
-                    string artist = string.Empty;
-                    string album;
-                    string title;
+                    string artist = "Unknown Artist";
+                    string album = "Unknown Album";
+                    string title = "Unknown Title";
                     string path;
                     string songJSON;
 

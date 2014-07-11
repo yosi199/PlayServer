@@ -102,11 +102,17 @@ namespace PlayServer.Players
             return returnValue;
         }
 
+        public string GetCurrentSongJSON()
+        {
+            return playerChoosen.GetCurrentSongJSON();
+        }
+
         public bool SetShuffle(bool shuffle)
         {
             bool isShuffleSet = playerChoosen.SetShuffle(shuffle);
             return isShuffleSet;
         }
+
 
         /// <summary>
         /// Increment/Decrement master volume

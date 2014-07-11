@@ -13,6 +13,8 @@ namespace PlayServer.Player
         string Rewind();
         string Forward();
 
+        string GetCurrentSongJSON();
+
         bool SetShuffle(bool isShuffle);
     }
 }
