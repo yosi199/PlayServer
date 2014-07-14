@@ -92,6 +92,7 @@ namespace PlayServer.Network
                         break;
 
                     case "KillAndRestart":
+                       // SynchronousSocketListener.ResetServer();
                         new SynchronousSocketListener();
                         break;
 

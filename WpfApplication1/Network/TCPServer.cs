@@ -121,6 +121,10 @@ namespace PlayServer.Network
             mainW = mainUI;
         }
 
+        public static void ResetServer()
+        {
+            
+        }
         public static void Send(string message)
         {
             if (handler!=null)
